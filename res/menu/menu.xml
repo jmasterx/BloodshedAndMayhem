@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item
+        android:id="@+id/game_difficulty_button"
+        android:title="@string/game_difficulty_label" >
+    </item>
+    <item
+        android:id="@+id/background_button"
+        android:title="@string/background_label" >
+    </item>
+    <item
+        android:id="@+id/exit_button"
+        android:title="@string/exit_label" >
+    </item>
+</menu>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="main_label_color">#FFFFFF</color>
+    <color name="main_application_background">#404040</color>
+    <color name="main_game_background">#707070</color>
+    <color name="main_game_foreground">#000000</color>
+    <color name="puzzle_line">#707070</color>
+    <color name="circle_dark">#999999</color>
+    <color name="circle_lite">#FFFFFF</color><color name="score_color">#FFFFFF</color>
+    
+    <color name="level_color">#FFFFFF</color>
+    
+</resources>
