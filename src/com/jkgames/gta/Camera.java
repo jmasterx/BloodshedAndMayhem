@@ -29,7 +29,6 @@ public class Camera
 		c.getCanvas().scale(getScale(), getScale());
 	}
 
-
 	public void move( float x, float y )
 	{
 		positionX += x;

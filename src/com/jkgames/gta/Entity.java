@@ -3,6 +3,7 @@ package com.jkgames.gta;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.RectF;
+import android.opengl.GLES20;
 
 public class Entity implements IDrawable
 {
@@ -57,6 +58,16 @@ public class Entity implements IDrawable
 		float w = getWidth();
 		float h = getHeight();
 		
+		getRect().left = x - (w / 2.0f);
+		getRect().top = y - (h / 2.0f);
+		getRect().right = x + (w / 2.0f);
+		getRect().bottom = y + (h / 2.0f);
+	}
+	
+	public void setSize(float w, float h)
+	{	
+		float x = getCenterX();
+		float y = getCenterY();
 		getRect().left = x - (w / 2.0f);
 		getRect().top = y - (h / 2.0f);
 		getRect().right = x + (w / 2.0f);

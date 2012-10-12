@@ -26,17 +26,23 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	private boolean sizeHasChanged = false;
 	private GraphicsContext graphicsContext = new GraphicsContext();
 	private Camera camera = new Camera();
-	private ArrayList<Road> roads = new ArrayList<Road>();
-	private ArrayList<Intersection> intersections = new ArrayList<Intersection>();
+
 	private float startTouchX;
 	private float startTouchY;
 	
-	// constants for the animation
-	private static final float	FRAME_RATE	= 1.0f / 60.0f; // NTSC 60 FPS
+	private City city = null;
+	
+	private final static int 	MAX_FPS = 60;
+	// maximum number of frames to be skipped
+	private final static int	MAX_FRAME_SKIPS = 5;
+	// the frame period
+	private final static int	FRAME_PERIOD = 1000 / MAX_FPS;	
+	
 	private Thread	thread = null;	// thread that will run the animation
 	private volatile boolean running; // = true if animation is running
 	private SurfaceHolder holder;
-	private CityGenerator city = new CityGenerator(40, 35, 400, 500);
+	
+	AnalogStick stick;
 	
 	private Paint p = new Paint();
 	public GameView(Context context) 
@@ -50,39 +56,38 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		setFocusableInTouchMode(true);
 		gameDifficulty = game.getIntent().getIntExtra("game_difficulty", 0);
 		running = false;
-		camera.setScale(0.1f);
+		camera.setScale(2.0f);
+		graphicsContext.setCamera(camera);
 		
 		Resources res = game.getResources();
 		Bitmap mainRoad = BitmapFactory.decodeResource(res, R.drawable.main_road);
 		Bitmap mainIntersection = BitmapFactory.decodeResource(res, R.drawable.road_intersection);
-		city.generateIntersectionsAndRoads(intersections, roads, mainIntersection, mainRoad);
 		
-		p.setColor(Color.RED);
+		ArrayList<Road> roads = new ArrayList<Road>();
+		ArrayList<Intersection> intersections = new ArrayList<Intersection>();
+				
+		CityGenerator cityGen = new CityGenerator(30, 30, 512, 512);
+		cityGen.generateIntersectionsAndRoads(intersections, roads,
+				mainIntersection, mainRoad);
+		
+		city = new City(roads,intersections);
+		Bitmap stickImg = BitmapFactory.decodeResource(res, R.drawable.analog_stick);
+		Bitmap subStickImg = BitmapFactory.decodeResource(res, R.drawable.sub_analog_stick);
+		
+		stick = new AnalogStick(stickImg, subStickImg, 65.0f);
+		stick.setCenter(90.0f, 90.0f);
+	
+		
 	}
 	
-	@Override
-	protected void onDraw(Canvas canvas)
+	protected void onDrawTransformed(GraphicsContext g)
 	{	
-		graphicsContext.setCanvas(canvas);
-		graphicsContext.clear();
-		camera.applyTransform(graphicsContext);
-		RectF screen = camera.getCamRect(getWidth(), getHeight());
-		for(Road r : roads)
-		{
-			if(RectF.intersects(screen, r.getRect()) || screen.contains(r.getRect()))
-			{
-				r.draw(graphicsContext);
-			}
-		}
-		
-		for(Intersection i : intersections)
-		{
-			if(RectF.intersects(screen, i.getRect()) || screen.contains(i.getRect()))
-			{
-				i.draw(graphicsContext);
-			}
-		}
-		
+		city.draw(g);
+	}
+	
+	protected void onDrawUntransformed(GraphicsContext g)
+	{	
+		stick.draw(g);
 	}
 	
 	@Override
@@ -117,11 +122,16 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		if(e.getAction() == MotionEvent.ACTION_DOWN)
 		{
 			touchBegin(e);
-			camera.beginDeltaTracking();
+			stick.setCenter(e.getX(), e.getY());
+			stick.calcStickVector(e.getX(), e.getY());
 		}
 		else if(e.getAction() == MotionEvent.ACTION_MOVE && e.getActionIndex() == 0)
 		{
-			camera.deltaMove(-getTouchDeltaX(e), -getTouchDeltaY(e));
+			stick.calcStickVector(e.getX(), e.getY());
+		}
+		if(e.getAction() == MotionEvent.ACTION_UP && e.getActionIndex() == 0)
+		{
+			stick.clearStickValue();
 		}
 	
 		return true;
@@ -156,56 +166,81 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		}
 	}
 	
-	public void run()
-	{
-		// this is the method that gets called when the thread is started.
+	public void run() {
+		Canvas canvas;
 
-		// first we get the current time before the loop starts
-		long startTime = System.currentTimeMillis();
+		long beginTime;		// the time when the cycle begun
+		long timeDiff;		// the time it took for the cycle to execute
+		int sleepTime;		// ms to sleep (<0 if we're behind)
+		int framesSkipped;	// number of frames being skipped 
 
-		// start the animation loop
-		while (running)
-		{
-			// we have to make sure that the surface has been created
-			// if not we wait until it gets created
-			if (!holder.getSurface ().isValid())
-				continue;
+		sleepTime = 0;
 
-			// get the time elapsed since the loop was started
-			// this is important to achieve frame rate-independent movement,
-			// otherwise on faster processors the animation will go too fast
-			float timeElapsed = (System.currentTimeMillis () - startTime);
+		while (running) {
+			canvas = null;
+			// try locking the canvas for exclusive pixel editing
+			// in the surface
+			try {
+				
+				// we have to make sure that the surface has been created
+				// if not we wait until it gets created
+				if (!holder.getSurface ().isValid())
+					continue;
+				canvas = this.holder.lockCanvas();
+			synchronized (holder) {
+					beginTime = System.currentTimeMillis();
+					framesSkipped = 0;	// resetting the frames skipped
+					// update game state
+					update();
+					// render state to the screen
+					// draws the canvas on the panel
+					display(canvas);
+					// calculate how long did the cycle take
+					timeDiff = System.currentTimeMillis() - beginTime;
+					// calculate sleep time
+					sleepTime = (int)(FRAME_PERIOD - timeDiff);
 
-			// is it time to display the next frame?
-			if (timeElapsed > FRAME_RATE)
-			{
-				// compute the next step in the animation
-				update();
+					if (sleepTime > 0) {
+						// if sleepTime > 0 we're OK
+						try {
+							// send the thread to sleep for a short period
+							// very useful for battery saving
+							Thread.sleep(sleepTime);
+						} catch (InterruptedException e) {}
+					}
 
-				// display the new frame
-				display();
-
-				// reset the start time
-				startTime = System.currentTimeMillis();
-			}
+					while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
+						// we need to catch up
+						// update without rendering
+						update();
+						// add frame period to check if in next frame
+						sleepTime += FRAME_PERIOD;
+						framesSkipped++;
+					}
+				}
+			} finally {
+				// in case of an exception the surface is not left in
+				// an inconsistent state
+				if (canvas != null) {
+					holder.unlockCanvasAndPost(canvas);
+				}
+			}	// end finally
 		}
-
-		// run is over: thread dies
 	}
-	
 
 	private void update()
 	{
-		
+		camera.move(stick.getStickValueX() * 15.0f, stick.getStickValueY() * 15.0f);
 	}
 
-	private void display()
+	private void display(Canvas canvas)
 	{
-		// we lock the surface for rendering and get a Canvas instance we can use
-		Canvas canvas = holder.lockCanvas();
-		onDraw(canvas);
-		// we unlock the surface and make sure that what we've drawn via the Canvas gets
-		// displayed on the screen
-		holder.unlockCanvasAndPost(canvas);
+		graphicsContext.setCanvas(canvas);
+		graphicsContext.clear();
+		camera.applyTransform(graphicsContext);
+		onDrawTransformed(graphicsContext);
+		graphicsContext.identityTransform();
+		onDrawUntransformed(graphicsContext);
+
 	}
 }
