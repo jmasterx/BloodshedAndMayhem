@@ -31,7 +31,6 @@ public class CityGenerator
 		removeEdges();
 		removeDisconnectedSquares();
 		removeDeadEnds();
-		
 	}
 	
 	private void removeEdges()
@@ -87,7 +86,7 @@ public class CityGenerator
 	
 	private void removeVerticies()
 	{
-		//remove verties to create holes in the map
+		//remove vertices to create holes in the map
 		for(int i = 0; i < getNumXNodes() * VERTEX_REMOVAL_SCALAR; ++i)
 		{
 			int x = JMath.randomRange(1, getNumXNodes() - 2);
@@ -284,10 +283,8 @@ public class CityGenerator
 		}
 	}
 	
-	
 	private ArrayList<GraphNode> getDisconnectedNodes()
 	{
-	
 		ArrayList<GraphNode> visited = new ArrayList<GraphNode>();
 		ArrayList<GraphNode> nodes = new ArrayList<GraphNode>();
 		
@@ -376,10 +373,8 @@ public class CityGenerator
 		{
 			return (hasNodeAbove(g) && hasNodeBelow(g) && g.getSize() == 2) ||
 			(hasNodeToLeft(g) && hasNodeToRight(g) && g.getSize() == 2);
-		}
-		
-		return false;
-			
+		}	
+		return false;	
 	}
 	
 	public GraphNode findNonCrossSectionNode(int x, int y, int dx, int dy)

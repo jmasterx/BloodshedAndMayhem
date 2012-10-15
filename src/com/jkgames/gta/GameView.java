@@ -22,7 +22,6 @@ import android.view.View.OnTouchListener;
 public class GameView extends SurfaceView implements Runnable, OnTouchListener
 {
 	private Game game;
-	private int gameDifficulty;
 	private boolean sizeHasChanged = false;
 	private GraphicsContext graphicsContext = new GraphicsContext();
 	private Camera camera = new Camera();
@@ -41,8 +40,7 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	private Thread	thread = null;	// thread that will run the animation
 	private volatile boolean running; // = true if animation is running
 	private SurfaceHolder holder;
-	
-	AnalogStick stick;
+	private InputHandler input = null;
 	
 	private Paint p = new Paint();
 	public GameView(Context context) 
@@ -54,10 +52,10 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		holder = getHolder();
 		setFocusable(true);
 		setFocusableInTouchMode(true);
-		gameDifficulty = game.getIntent().getIntExtra("game_difficulty", 0);
 		running = false;
 		camera.setScale(2.0f);
 		graphicsContext.setCamera(camera);
+		input = new InputHandler(game.getResources());
 		
 		Resources res = game.getResources();
 		Bitmap mainRoad = BitmapFactory.decodeResource(res, R.drawable.main_road);
@@ -71,13 +69,6 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 				mainIntersection, mainRoad);
 		
 		city = new City(roads,intersections);
-		Bitmap stickImg = BitmapFactory.decodeResource(res, R.drawable.analog_stick);
-		Bitmap subStickImg = BitmapFactory.decodeResource(res, R.drawable.sub_analog_stick);
-		
-		stick = new AnalogStick(stickImg, subStickImg, 65.0f);
-		stick.setCenter(90.0f, 90.0f);
-	
-		
 	}
 	
 	protected void onDrawTransformed(GraphicsContext g)
@@ -87,7 +78,7 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	
 	protected void onDrawUntransformed(GraphicsContext g)
 	{	
-		stick.draw(g);
+		input.draw(g);
 	}
 	
 	@Override
@@ -98,6 +89,7 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	   if(!sizeHasChanged)
 	   {
 		   sizeHasChanged = true;   
+		   input.onResize(w, h);
 	   }
 	}
 	
@@ -122,16 +114,12 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		if(e.getAction() == MotionEvent.ACTION_DOWN)
 		{
 			touchBegin(e);
-			stick.setCenter(e.getX(), e.getY());
-			stick.calcStickVector(e.getX(), e.getY());
 		}
 		else if(e.getAction() == MotionEvent.ACTION_MOVE && e.getActionIndex() == 0)
 		{
-			stick.calcStickVector(e.getX(), e.getY());
 		}
 		if(e.getAction() == MotionEvent.ACTION_UP && e.getActionIndex() == 0)
 		{
-			stick.clearStickValue();
 		}
 	
 		return true;
@@ -176,18 +164,21 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 		sleepTime = 0;
 
-		while (running) {
+		while (running) 
+		{
 			canvas = null;
 			// try locking the canvas for exclusive pixel editing
 			// in the surface
-			try {
+			try 
+			{
 				
 				// we have to make sure that the surface has been created
 				// if not we wait until it gets created
 				if (!holder.getSurface ().isValid())
 					continue;
 				canvas = this.holder.lockCanvas();
-			synchronized (holder) {
+			synchronized (holder) 
+			{
 					beginTime = System.currentTimeMillis();
 					framesSkipped = 0;	// resetting the frames skipped
 					// update game state
@@ -200,16 +191,19 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 					// calculate sleep time
 					sleepTime = (int)(FRAME_PERIOD - timeDiff);
 
-					if (sleepTime > 0) {
+					if (sleepTime > 0) 
+					{
 						// if sleepTime > 0 we're OK
-						try {
+						try 
+						{
 							// send the thread to sleep for a short period
 							// very useful for battery saving
 							Thread.sleep(sleepTime);
 						} catch (InterruptedException e) {}
 					}
 
-					while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) {
+					while (sleepTime < 0 && framesSkipped < MAX_FRAME_SKIPS) 
+					{
 						// we need to catch up
 						// update without rendering
 						update();
@@ -218,10 +212,13 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 						framesSkipped++;
 					}
 				}
-			} finally {
+			} 
+			finally 
+			{
 				// in case of an exception the surface is not left in
 				// an inconsistent state
-				if (canvas != null) {
+				if (canvas != null) 
+				{
 					holder.unlockCanvasAndPost(canvas);
 				}
 			}	// end finally
@@ -230,7 +227,6 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 	private void update()
 	{
-		camera.move(stick.getStickValueX() * 15.0f, stick.getStickValueY() * 15.0f);
 	}
 
 	private void display(Canvas canvas)
@@ -241,6 +237,5 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		onDrawTransformed(graphicsContext);
 		graphicsContext.identityTransform();
 		onDrawUntransformed(graphicsContext);
-
 	}
 }

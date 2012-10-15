@@ -24,7 +24,6 @@ public class PositionComponent
 		this.rect = new RectF(p.getRect());
 	}
 	
-	
 	public RectF getRect() 
 	{
 		return rect;

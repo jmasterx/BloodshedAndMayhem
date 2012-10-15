@@ -74,6 +74,15 @@ public class Entity implements IDrawable
 		getRect().bottom = y + (h / 2.0f);
 	}
 
+	public void setRadius(float radius)
+	{
+		setSize(radius * 2.0f, radius * 2.0f);
+	}
+	
+	public float getRadius()
+	{
+		return getWidth() / 2.0f;
+	}
 
 	public void draw(GraphicsContext c)
 	{

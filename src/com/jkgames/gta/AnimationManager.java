@@ -28,8 +28,7 @@ public class AnimationManager
 	
 	public void add(AnimationEvent animation)
 	{
-		animations.add(animation);
-		
+		animations.add(animation);	
 	}
 	
 	public void remove(AnimationEvent animation)

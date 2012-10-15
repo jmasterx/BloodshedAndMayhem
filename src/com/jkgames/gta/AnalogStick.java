@@ -11,23 +11,13 @@ public class AnalogStick extends Entity
 	private Vector2D stickVector = new Vector2D();
 	private float stickDistance = 0.0f;
 	public static final float INNER_STICK_PROPORTION = 0.5f;
-	
+	public boolean visible = true;
 	
 	public AnalogStick(Bitmap mainStick, Bitmap innerStick, float radius)
 	{
 		mainStickImg = mainStick;
 		innerStickImg = innerStick;
 		setRadius(radius);
-	}
-	
-	public void setRadius(float radius)
-	{
-		setSize(radius * 2.0f, radius * 2.0f);
-	}
-	
-	public float getRadius()
-	{
-		return getWidth() / 2.0f;
 	}
 	
 	public float getInnerRadius()
@@ -93,5 +83,15 @@ public class AnalogStick extends Entity
 		stickVector.x = 0.0f;
 		stickVector.y = 0.0f;
 		stickDistance = 0.0f;
+	}
+
+	public boolean isVisible() 
+	{
+		return visible;
+	}
+
+	public void setVisible(boolean visible) 
+	{
+		this.visible = visible;
 	}
 }
