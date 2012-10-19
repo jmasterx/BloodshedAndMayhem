@@ -89,5 +89,10 @@ public class Entity implements IDrawable
 		
 	}
 	
+	public void update(float timeStep)
+	{
+		
+	}
+	
 
 }

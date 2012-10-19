@@ -70,7 +70,7 @@ public class Intersection extends Entity
 	@Override
 	public void draw(GraphicsContext c)
 	{
-		c.drawRotatedScaledBitmap(image, getCenterX(), getCenterY(), getWidth(), getHeight(), 0.0f);
+		c.drawRotatedScaledBitmap(image, getCenterX(), getCenterY(), getWidth(), getHeight(), getAngle());
 	}
 	
 }

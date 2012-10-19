@@ -10,7 +10,7 @@ public class AnalogStick extends Entity
 	private RectF innerStickRect = new RectF();
 	private Vector2D stickVector = new Vector2D();
 	private float stickDistance = 0.0f;
-	public static final float INNER_STICK_PROPORTION = 0.5f;
+	public static final float INNER_STICK_PROPORTION = 0.2f;
 	public boolean visible = true;
 	
 	public AnalogStick(Bitmap mainStick, Bitmap innerStick, float radius)

@@ -19,7 +19,7 @@ public class GraphicsContext
 
 	public GraphicsContext()
 	{
-		paint.setColor(Color.GREEN);
+		paint.setColor(Color.BLACK);
 	}
 	
 	public void additiveBlend()

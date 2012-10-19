@@ -5,7 +5,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,7 +18,7 @@ public class CityGenerator
 	private GraphNode[][] graphNodes = null;
 	private float intersectionWidth;
 	
-	public static final float NODE_SCALAR = 1.0f / 3.0f;
+	public static final float NODE_SCALAR = 1.0f / 6.0f;
 	public static final int EDGE_REMOVAL_SCALAR = 7;
 	public static final float VERTEX_REMOVAL_SCALAR = 1.5f;
 	public static final int MIN_REMOVE_EDGES = 1;
@@ -29,10 +31,48 @@ public class CityGenerator
 	
 		removeVerticies();
 		removeEdges();
+		addMainArteries();
 		removeDisconnectedSquares();
 		removeDeadEnds();
 	}
 	
+	private void addMainArteries()
+	{
+		int numX = JMath.randomRange(2, getNumXNodes() / 6);
+		int numY = JMath.randomRange(2, getNumYNodes() / 6);
+		
+		for(int i = 0; i < numX; ++i)
+		{
+			int xNode = JMath.randomRange(1, getNumXNodes() - 2);
+			
+			for(int j = 0; j < getNumYNodes(); ++j)
+			{
+				GraphNode g = getNodeAt(xNode, j);
+				if(!hasNodeBelow(g) && nodeExists(xNode, j + 1))
+				{
+					GraphNode below = getNodeAt(xNode, j + 1);
+					below.add(g);
+					g.add(below);
+				}
+			}
+		}
+		
+		for(int i = 0; i < numY; ++i)
+		{
+			int yNode = JMath.randomRange(1, getNumYNodes() - 2);
+			
+			for(int j = 0; j < getNumXNodes(); ++j)
+			{
+				GraphNode g = getNodeAt(j, yNode);
+				if(!hasNodeToRight(g) && nodeExists(j + 1, yNode))
+				{
+					GraphNode right = getNodeAt(j + 1, yNode);
+					right.add(g);
+					g.add(right);
+				}
+			}
+		}
+	}
 	private void removeEdges()
 	{
 		int iterations = getNumXNodes() * getNumYNodes() * EDGE_REMOVAL_SCALAR;
@@ -404,9 +444,66 @@ public class CityGenerator
 		return null;
 	}
 	
-	public void generateIntersectionsAndRoads(
-			ArrayList<Intersection> intersections, ArrayList<Road> roads,
-			Bitmap intersectionImg, Bitmap roadImg)
+	private Intersection createIntersection(RectF position, GraphNode node, Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
+	{
+		Bitmap bmp = null;
+		int direction = 0; //0 = top, 1 = right, 2 = bottom, 3 = left
+		boolean t = hasNodeAbove(node);
+		boolean l = hasNodeToLeft(node);
+		boolean b = hasNodeBelow(node);
+		boolean r = hasNodeToRight(node);
+		
+		if(t && l && b && r)
+		{
+			bmp = fourWay;
+			direction = 0;
+		}
+		else if(t && l && !b && !r)
+		{
+			bmp = twoWay;
+			direction = 0;
+		}
+		else if(t && !l && !b && r)
+		{
+			bmp = twoWay;
+			direction = 1;
+		}
+		else if(!t && !l && b && r)
+		{
+			bmp = twoWay;
+			direction = 2;
+		}
+		else if(!t && l && b && !r)
+		{
+			bmp = twoWay;
+			direction = 3;
+		}
+		else if(t && l && b && !r)
+		{
+			bmp = threeWay;
+			direction = 0;
+		}
+		else if(t && l && !b && r)
+		{
+			bmp = threeWay;
+			direction = 1;
+		}
+		else if(t && !l && b && r)
+		{
+			bmp = threeWay;
+			direction = 2;
+		}
+		else if(!t && l && b && r)
+		{
+			bmp = threeWay;
+			direction = 3;
+		}
+		Intersection intersection = new Intersection(position, bmp);
+		intersection.setAngle((float)(Math.PI / 2.0f)  * direction);
+		return intersection;
+	}
+	private void generateRoadsAndIntersections(ArrayList<Intersection> intersections,
+			ArrayList<Road> roads, Bitmap roadImg, Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
 	{
 		//memory allocations are expensive
 		intersections.ensureCapacity(getNumXNodes() * getNumYNodes());
@@ -433,7 +530,7 @@ public class CityGenerator
 					tempRect.right = g.x + (intersectionWidth / 2.0f);
 					tempRect.bottom = g.y + (intersectionWidth / 2.0f);
 					
-					intersectionMatrix[i][j] = new Intersection(tempRect, intersectionImg);
+					intersectionMatrix[i][j] = createIntersection(tempRect, g, fourWay, threeWay, twoWay);
 				}
 			
 			}
@@ -455,23 +552,6 @@ public class CityGenerator
 					continue;
 				}
 				
-				if(hasNodeAbove(g) && in.getTopRoad() == null)
-				{
-					GraphNode gAbove = findNonCrossSectionNode(i, j, 0, -1);
-					Intersection inAbove = 
-							intersectionMatrix
-							[gAbove.getArrayPosX()][gAbove.getArrayPosY()];
-					
-					tempRect.left = gAbove.x - (intersectionWidth / 2.0f);
-					tempRect.top = gAbove.y + (intersectionWidth / 2.0f);
-					tempRect.right = g.x + (intersectionWidth / 2.0f);
-					tempRect.bottom = g.y - (intersectionWidth / 2.0f);
-					
-					Road road = new Road(tempRect,in,inAbove,roadImg,true);
-					in.setTopRoad(road);
-					inAbove.setBottomRoad(road);
-					roads.add(road);
-				}
 				
 				if(hasNodeBelow(g) && in.getBottomRoad() == null)
 				{
@@ -481,32 +561,16 @@ public class CityGenerator
 					
 					tempRect.left = g.x - (intersectionWidth / 2.0f);
 					tempRect.top = g.y + (intersectionWidth / 2.0f);
-					tempRect.right = gBelow.x + (intersectionWidth / 2.0f);
-					tempRect.bottom = gBelow.y - (intersectionWidth / 2.0f);
+					tempRect.right = gBelow.x + (intersectionWidth / 2.0f) ;
+					//fix floating point artifacts
+					tempRect.bottom = gBelow.y - (intersectionWidth / 2.0f) + 0.015f;
 					
 					Road road = new Road(tempRect,inBelow,in,roadImg,true);
 					in.setBottomRoad(road);
 					inBelow.setTopRoad(road);
 					roads.add(road);
 				}
-				
-				if(hasNodeToLeft(g) && in.getLeftRoad() == null)
-				{
-					GraphNode gToLeft = findNonCrossSectionNode(i, j, -1, 0);
-					Intersection inToLeft = intersectionMatrix
-							[gToLeft.getArrayPosX()][gToLeft.getArrayPosY()];
-					
-					tempRect.left = gToLeft.x + (intersectionWidth / 2.0f);
-					tempRect.top = gToLeft.y - (intersectionWidth / 2.0f);
-					tempRect.right = g.x - (intersectionWidth / 2.0f);
-					tempRect.bottom = g.y + (intersectionWidth / 2.0f);
-					
-					Road road = new Road(tempRect,in,inToLeft,roadImg,false);
-					in.setLeftRoad(road);
-					inToLeft.setRightRoad(road);
-					roads.add(road);
-				}
-				
+			
 				if(hasNodeToRight(g) && in.getRightRoad() == null)
 				{
 					GraphNode gToRight = findNonCrossSectionNode(i, j, 1, 0);
@@ -515,7 +579,8 @@ public class CityGenerator
 					
 					tempRect.left = g.x + (intersectionWidth / 2.0f);
 					tempRect.top = g.y - (intersectionWidth / 2.0f);
-					tempRect.right = gToRight.x - (intersectionWidth / 2.0f);
+					//fix floating point artifacts
+					tempRect.right = gToRight.x - (intersectionWidth / 2.0f) +  0.015f;
 					tempRect.bottom = gToRight.y + (intersectionWidth / 2.0f);
 					
 					Road road = new Road(tempRect,inToRight,in,roadImg,false);
@@ -525,7 +590,18 @@ public class CityGenerator
 				}
 			}
 		}
-		
+	}
+	
+	public City generateCity(Resources res)
+	{
+		Bitmap roadImg = BitmapFactory.decodeResource(res, R.drawable.main_road);
+		Bitmap fourWay = BitmapFactory.decodeResource(res, R.drawable.road_intersection);
+		Bitmap threeWay = BitmapFactory.decodeResource(res, R.drawable.road_intersection_three_way);
+		Bitmap twoWay = BitmapFactory.decodeResource(res, R.drawable.road_intersection_two_way);
+		ArrayList<Intersection> intersections = new ArrayList<Intersection>();
+		ArrayList<Road> roads = new ArrayList<Road>();
+		generateRoadsAndIntersections(intersections, roads, roadImg, fourWay,threeWay,twoWay);
+		return new City(roads,intersections);
 	}
 
 	public float getIntersectionWidth() 

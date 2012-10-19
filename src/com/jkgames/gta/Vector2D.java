@@ -78,4 +78,101 @@ public class Vector2D
 	{
 		this.y = y;
 	}
+	
+	public float cross(Vector2D b)
+	{
+		return ((x*b.y) - (y*b.x));
+	}
+	
+	public Vector2D project(Vector2D v)
+	{
+		float dot = dot(v);
+		return new Vector2D(dot * v.x,dot * v.y);
+	}
+	
+	public Vector2D divide(Vector2D r)
+	{
+		return new Vector2D(x / r.x,y / r.y);
+	}
+	
+	public Vector2D divide(float r)
+	{
+		return new Vector2D(x / r,y / r);
+	}
+	
+	public Vector2D multiply(Vector2D r)
+	{
+		return new Vector2D(x * r.x,y * r.y);
+	}
+	
+	public Vector2D multiply(float r)
+	{
+		return new Vector2D(x * r,y * r);
+	}
+	
+	public Vector2D subtract(Vector2D r)
+	{
+		return new Vector2D(x - r.x,y - r.y);
+	}
+	
+	public Vector2D subtract(float r)
+	{
+		return new Vector2D(x - r,y - r);
+	}
+	
+	public Vector2D add(Vector2D r)
+	{
+		return new Vector2D(x + r.x,y + r.y);
+	}
+	
+	public Vector2D add(float r)
+	{
+		return new Vector2D(x + r,y + r);
+	}
+	
+	public static Vector2D add(Vector2D l, Vector2D r)
+    {
+        return new Vector2D(l.x + r.x, l.y + r.y);
+    }
+
+    public static Vector2D subtract(Vector2D l, Vector2D r)
+    {
+        return new Vector2D(l.x - r.x, l.y - r.y);
+    }
+
+    public static Vector2D negative(Vector2D r)
+    {
+        Vector2D temp = new Vector2D(-r.x, -r.y);
+        return temp;
+    }
+
+    public static Vector2D scalarMultiply(Vector2D l, float r)
+    {
+        return new Vector2D(l.x * r, l.y * r);
+    }
+
+    public static Vector2D scalarDivide(Vector2D l, float r)
+    {
+        return new Vector2D(l.x / r, l.y / r);
+    }
+
+    public static float dot(Vector2D l, Vector2D r)
+    {
+        return (l.x * r.x + l.y * r.y);
+    }
+
+
+    public static float cross(Vector2D l, Vector2D r)
+    {
+        return (l.x*r.y - l.y*r.x);
+    }
+
+
+    public Vector2D project(Vector2D v, Float mag)
+    {
+        float thisDotV = dot(this, v);
+        mag = thisDotV;
+        return scalarMultiply(v, thisDotV);
+    }
+
 }

@@ -76,4 +76,9 @@ public class JMath
 		return dist / unitsPerSec;
 	}
 	
+	static public float radToDeg(float rad)
+	{
+		return rad / (float)Math.PI * 180.0f;
+	}
+	
 }

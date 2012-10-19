@@ -26,9 +26,6 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	private GraphicsContext graphicsContext = new GraphicsContext();
 	private Camera camera = new Camera();
 
-	private float startTouchX;
-	private float startTouchY;
-	
 	private City city = null;
 	
 	private final static int 	MAX_FPS = 60;
@@ -41,8 +38,10 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	private volatile boolean running; // = true if animation is running
 	private SurfaceHolder holder;
 	private InputHandler input = null;
+	private Bitmap sideWalk;
 	
-	private Paint p = new Paint();
+	private Vehicle vehicle = new Vehicle();
+
 	public GameView(Context context) 
 	{
 		super(context);
@@ -53,27 +52,46 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		running = false;
-		camera.setScale(2.0f);
+		camera.setScale(1.75f);
 		graphicsContext.setCamera(camera);
 		input = new InputHandler(game.getResources());
-		
-		Resources res = game.getResources();
-		Bitmap mainRoad = BitmapFactory.decodeResource(res, R.drawable.main_road);
-		Bitmap mainIntersection = BitmapFactory.decodeResource(res, R.drawable.road_intersection);
-		
-		ArrayList<Road> roads = new ArrayList<Road>();
-		ArrayList<Intersection> intersections = new ArrayList<Intersection>();
 				
-		CityGenerator cityGen = new CityGenerator(30, 30, 512, 512);
-		cityGen.generateIntersectionsAndRoads(intersections, roads,
-				mainIntersection, mainRoad);
+		CityGenerator cityGen = new CityGenerator(30, 30, 1100, 1100);
 		
-		city = new City(roads,intersections);
+		city = cityGen.generateCity(game.getResources());
+		
+		sideWalk = BitmapFactory.decodeResource(game.getResources(), R.drawable.side_walk);
+		
+		Bitmap taxi = BitmapFactory.decodeResource(game.getResources(), R.drawable.taxi);
+		vehicle.initialize(new Vector2D(taxi.getWidth() / 20.0f,taxi.getHeight() / 20.0f), 4.45f, taxi);
+		vehicle.setLocation(new Vector2D(0, 0), 0);
+	
+		camera.setPosition(-100, -100);
 	}
 	
 	protected void onDrawTransformed(GraphicsContext g)
 	{	
+		RectF view = g.getCamera().getCamRect(getWidth(), getHeight());
+		float w = sideWalk.getWidth();
+		float h = sideWalk.getHeight();
+		int numX = (int)Math.ceil(view.width() / (float)w) + 2;
+		int numY = (int)Math.ceil(view.height() / (float)h) + 2;
+		
+		float sx = (float)((int)view.left % (int)w) + w;
+		float sy = (float)((int)view.top % (int)h) + h;
+	
+		for(int i = 0; i < numX; ++i)
+		{
+			for(int j = 0; j < numY; ++j)
+			{
+				g.drawRotatedScaledBitmap(sideWalk, view.left - sx + 
+						(i * sideWalk.getWidth()),
+						view.top - sy + (j * sideWalk.getHeight()),
+						w + 0.02f,h + 0.02f,0.0f);
+			}
+		}
 		city.draw(g);
+		vehicle.draw(g);
 	}
 	
 	protected void onDrawUntransformed(GraphicsContext g)
@@ -93,35 +111,9 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	   }
 	}
 	
-	public void touchBegin(MotionEvent e)
-	{
-		startTouchX = e.getX();
-		startTouchY = e.getY();
-	}
-	
-	public float getTouchDeltaX(MotionEvent e)
-	{
-		return e.getX() - startTouchX;
-	}
-	
-	public float getTouchDeltaY(MotionEvent e)
-	{
-		return e.getY() - startTouchY;
-	}
-	
 	public boolean onTouch(View v, MotionEvent e)
 	{
-		if(e.getAction() == MotionEvent.ACTION_DOWN)
-		{
-			touchBegin(e);
-		}
-		else if(e.getAction() == MotionEvent.ACTION_MOVE && e.getActionIndex() == 0)
-		{
-		}
-		if(e.getAction() == MotionEvent.ACTION_UP && e.getActionIndex() == 0)
-		{
-		}
-	
+		input.onTouch(e);
 		return true;
 	}
 	
@@ -227,6 +219,22 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 	private void update()
 	{
+		camera.setPosition((vehicle.getPosition().x * camera.getScale()) - ((getWidth() ) / 2.0f),
+				(vehicle.getPosition().y * camera.getScale()) - ((getHeight() ) / 2.0f));
+		if(input.isPressed(ControlButton.BUTTON_GAS))
+		{
+			vehicle.setThrottle(1.0f, false);
+		}
+		
+		if(input.isPressed(ControlButton.BUTTON_BRAKE))
+		{
+			vehicle.setBrakes(1.0f);
+		}
+
+		vehicle.setSteering(input.getAnalogStick().getStickValueX());
+		
+
+		vehicle.update(16.6666f / 1000.0f);
 	}
 
 	private void display(Canvas canvas)
