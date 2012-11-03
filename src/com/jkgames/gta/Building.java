@@ -18,6 +18,18 @@ public class Building extends Entity
 		setDirection(direction);
 		setScale(scale);
 		setCenter(cx,cy);
+		setRect(scale,cx,cy,direction);
+	}
+	
+	public void setRect(float scale, float cx, float cy, int direction)
+	{
+		float w = (direction == DIRECTION_TOP  || direction == DIRECTION_BOTTOM)
+				? scale * image.getWidth() : scale * image.getHeight();
+		float h = (direction == DIRECTION_TOP  || direction == DIRECTION_BOTTOM)
+						? scale * image.getHeight() : scale * image.getWidth();
+						
+		setSize(w, h);
+		setCenter(cx, cy);
 	}
 	
 	public Bitmap getImage()
@@ -73,5 +85,11 @@ public class Building extends Entity
 	public void setDirection(int direction) 
 	{
 		this.direction = direction;
+	}
+	
+	public void draw(GraphicsContext c)
+	{
+		c.drawRotatedScaledBitmap(image, getCenterX(), getCenterY(),
+				image.getWidth() * getScale(), image.getHeight() * getScale(), getDirection() * (float)Math.PI / 2.0f);
 	}
 }

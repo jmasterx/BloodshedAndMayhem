@@ -9,12 +9,14 @@ public class City implements IDrawable
 {
 	private ArrayList<Road> roads = new ArrayList<Road>();
 	private ArrayList<Intersection> intersections = new ArrayList<Intersection>();
+	private ArrayList<Building> buildings = new ArrayList<Building>();
 
 	
-	public City(ArrayList<Road> roads, ArrayList<Intersection> intersections)
+	public City(ArrayList<Road> roads, ArrayList<Intersection> intersections, ArrayList<Building> buildings)
 	{
 		this.roads = roads;
 		this.intersections = intersections;
+		this.buildings = buildings;
 		
 	}
 	
@@ -44,6 +46,14 @@ public class City implements IDrawable
 			if(RectF.intersects(screen, i.getRect()) || screen.contains(i.getRect()))
 			{
 				i.draw(c);
+			}
+		}
+		
+		for(Building b : buildings)
+		{
+			if(RectF.intersects(screen, b.getRect()) || screen.contains(b.getRect()))
+			{
+				b.draw(c);
 			}
 		}
 	}

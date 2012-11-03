@@ -219,8 +219,13 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 	private void update()
 	{
+		/*
 		camera.setPosition((vehicle.getPosition().x * camera.getScale()) - ((getWidth() ) / 2.0f),
 				(vehicle.getPosition().y * camera.getScale()) - ((getHeight() ) / 2.0f));
+				*/
+		
+		
+		camera.move(input.getAnalogStick().getStickValueX() * 15.0f, input.getAnalogStick().getStickValueY() * 15.0f);
 		if(input.isPressed(ControlButton.BUTTON_GAS))
 		{
 			vehicle.setThrottle(1.0f, false);

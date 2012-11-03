@@ -54,7 +54,7 @@ public class Vehicle extends RigidBody
     {
         float brakeTorque = 15.0f;
 
-        //apply brake torque apposing wheel vel
+        //apply brake torque opposing wheel vel
         for (Wheel wheel : wheels)
         {
             float wheelVel = wheel.getWheelSpeed();

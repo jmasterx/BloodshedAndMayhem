@@ -601,7 +601,8 @@ public class CityGenerator
 		ArrayList<Intersection> intersections = new ArrayList<Intersection>();
 		ArrayList<Road> roads = new ArrayList<Road>();
 		generateRoadsAndIntersections(intersections, roads, roadImg, fourWay,threeWay,twoWay);
-		return new City(roads,intersections);
+		BuildingGenerator gen = new BuildingGenerator(res, roads);
+		return new City(roads,intersections,gen.generateBuildings());
 	}
 
 	public float getIntersectionWidth() 

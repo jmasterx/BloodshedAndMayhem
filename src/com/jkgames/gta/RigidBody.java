@@ -12,7 +12,6 @@ class RigidBody extends Entity
   private Vector2D position = new Vector2D();
   private Vector2D velocity = new Vector2D();
   private Vector2D forces = new Vector2D();
-  private Bitmap image;
   private float mass;
 
   //angular
@@ -22,6 +21,7 @@ class RigidBody extends Entity
 
   //graphical
   private Vector2D halfSize = new Vector2D();
+  private Bitmap image;
 
   public RigidBody()
   {
