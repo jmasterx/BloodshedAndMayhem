@@ -25,9 +25,7 @@ public class Gta extends Activity implements OnClickListener
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-        
-        View instructionsButton = findViewById(R.id.instructions_button);
-        instructionsButton.setOnClickListener(this);
+       
         
         View newGameButton = findViewById(R.id.new_game_button);
         newGameButton.setOnClickListener(this);
@@ -69,10 +67,6 @@ public class Gta extends Activity implements OnClickListener
 	{
 		switch(v.getId())
 		{
-		case R.id.instructions_button:
-			Intent i = new Intent(this,Instructions.class);
-			startActivity(i);
-			break;
 		case R.id.new_game_button:
 			startNewGame();
 			break;

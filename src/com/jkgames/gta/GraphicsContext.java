@@ -16,6 +16,7 @@ public class GraphicsContext
 	private Matrix identityMatrix = new Matrix();
 	private Paint paint = new Paint();
 	private Camera camera;
+	private OBB2D viewRect;
 
 	public GraphicsContext()
 	{
@@ -68,6 +69,19 @@ public class GraphicsContext
 				b.getWidth(), b.getHeight(), angle);
 	}
 	
+	public void drawBitmap(Bitmap b, 
+			float centerX, float centerY)
+	{
+		canvas.drawBitmap(b, centerX - (b.getWidth() / 2), centerY - (b.getHeight() / 2), null);
+	}
+	
+	public void drawBitmap(Bitmap b, 
+			float centerX, float centerY, Paint p)
+	{
+		canvas.drawBitmap(b, centerX - (b.getWidth() / 2), centerY - (b.getHeight() / 2), p);
+	}
+	
+	
 	public void setBackgroundColor(int c)
 	{
 		paint.setColor(c);
@@ -88,14 +102,19 @@ public class GraphicsContext
 		this.camera = camera;
 	}
 	
-	public RectF getViewRect()
+	public OBB2D getViewRect()
 	{
-		return getCamera().getCamRect(getCanvas().getWidth(), getCanvas().getHeight());
+		return viewRect;
 	}
 	
 	public void identityTransform()
 	{
 		getCanvas().setMatrix(identityMatrix);
+	}
+	
+	public void generateViewRect()
+	{
+		viewRect = getCamera().getCamRect(getCanvas().getWidth(), getCanvas().getHeight());
 	}
 	
 	

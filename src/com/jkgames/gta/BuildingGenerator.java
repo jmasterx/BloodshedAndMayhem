@@ -35,10 +35,10 @@ public class BuildingGenerator
 			{
 				if(!road.isTopBottom())
 				{
-					float posX = road.getRect().left + marginW;
-					float posY = road.getRect().top;
-					float maxX = road.getRect().right - marginW - posX;
-					float spaceX = 20;
+					float posX = road.getRect().left() + marginW;
+					float posY = road.getRect().top();
+					float maxX = road.getRect().right() - marginW - posX;
+					float spaceX = 70;
 					float totalBuildingW = spaceX + buildW;
 					int numBuildings = (int)Math.floor(maxX / totalBuildingW);
 					//margin - 1
@@ -69,10 +69,10 @@ public class BuildingGenerator
 				}
 				else
 				{
-					float posX = road.getRect().left;
-					float posY = road.getRect().top  + marginH + buildH;
-					float maxX = road.getRect().bottom - marginH - buildH - posY;
-					float spaceX = 20;
+					float posX = road.getRect().left();
+					float posY = road.getRect().top()  + marginH + buildH;
+					float maxX = road.getRect().bottom() - marginH - buildH - posY;
+					float spaceX = 70;
 					float totalBuildingW = spaceX + buildW;
 					int numBuildings = (int)Math.ceil(maxX / totalBuildingW);
 					//margin - 1

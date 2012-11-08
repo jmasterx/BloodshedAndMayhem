@@ -4,15 +4,12 @@
 package com.jkgames.gta;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.graphics.RectF;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -30,7 +27,7 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	
 	private final static int 	MAX_FPS = 60;
 	// maximum number of frames to be skipped
-	private final static int	MAX_FRAME_SKIPS = 5;
+	private final static int	MAX_FRAME_SKIPS = 4;
 	// the frame period
 	private final static int	FRAME_PERIOD = 1000 / MAX_FPS;	
 	
@@ -41,6 +38,8 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 	private Bitmap sideWalk;
 	
 	private Vehicle vehicle = new Vehicle();
+	
+	private QuadTree<Entity> quad;
 
 	public GameView(Context context) 
 	{
@@ -56,7 +55,7 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		graphicsContext.setCamera(camera);
 		input = new InputHandler(game.getResources());
 				
-		CityGenerator cityGen = new CityGenerator(30, 30, 1100, 1100);
+		CityGenerator cityGen = new CityGenerator(10, 10, 1000, 1000);
 		
 		city = cityGen.generateCity(game.getResources());
 		
@@ -67,30 +66,43 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 		vehicle.setLocation(new Vector2D(0, 0), 0);
 	
 		camera.setPosition(-100, -100);
+		
+		quad = new QuadTree<Entity>(new OBB2D(-1000,-1000,10000,10000));
+		
+		ArrayList<Building> buildings = city.getBuildings();
+		for(Building b : buildings)
+		{
+			quad.Insert(b);
+		}
 	}
 	
 	protected void onDrawTransformed(GraphicsContext g)
 	{	
-		RectF view = g.getCamera().getCamRect(getWidth(), getHeight());
+		OBB2D view = g.getCamera().getCamRect(getWidth(), getHeight());
 		float w = sideWalk.getWidth();
 		float h = sideWalk.getHeight();
-		int numX = (int)Math.ceil(view.width() / (float)w) + 2;
-		int numY = (int)Math.ceil(view.height() / (float)h) + 2;
+		int numX = (int)Math.ceil(view.getWidth() / (float)w) + 2;
+		int numY = (int)Math.ceil(view.getHeight() / (float)h) + 2;
 		
-		float sx = (float)((int)view.left % (int)w) + w;
-		float sy = (float)((int)view.top % (int)h) + h;
+		float sx = (float)((int)view.left() % (int)w) + w;
+		float sy = (float)((int)view.top() % (int)h) + h;
 	
 		for(int i = 0; i < numX; ++i)
 		{
 			for(int j = 0; j < numY; ++j)
 			{
-				g.drawRotatedScaledBitmap(sideWalk, view.left - sx + 
+				g.drawRotatedScaledBitmap(sideWalk, view.left() - sx + 
 						(i * sideWalk.getWidth()),
-						view.top - sy + (j * sideWalk.getHeight()),
+						view.top() - sy + (j * sideWalk.getHeight()),
 						w + 0.02f,h + 0.02f,0.0f);
 			}
 		}
 		city.draw(g);
+		List<Entity> buildings = quad.query(view);
+		for(Entity b : buildings)
+		{
+			b.draw(g);
+		}
 		vehicle.draw(g);
 	}
 	
@@ -219,16 +231,21 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 	private void update()
 	{
-		/*
+		
 		camera.setPosition((vehicle.getPosition().x * camera.getScale()) - ((getWidth() ) / 2.0f),
 				(vehicle.getPosition().y * camera.getScale()) - ((getHeight() ) / 2.0f));
-				*/
+				
 		
 		
-		camera.move(input.getAnalogStick().getStickValueX() * 15.0f, input.getAnalogStick().getStickValueY() * 15.0f);
+		//camera.move(input.getAnalogStick().getStickValueX() * 15.0f, input.getAnalogStick().getStickValueY() * 15.0f);
 		if(input.isPressed(ControlButton.BUTTON_GAS))
 		{
 			vehicle.setThrottle(1.0f, false);
+		}
+		
+		if(input.isPressed(ControlButton.BUTTON_STEAL_CAR))
+		{
+			vehicle.setThrottle(-1.0f, false);
 		}
 		
 		if(input.isPressed(ControlButton.BUTTON_BRAKE))
@@ -238,13 +255,37 @@ public class GameView extends SurfaceView implements Runnable, OnTouchListener
 
 		vehicle.setSteering(input.getAnalogStick().getStickValueX());
 		
-
-		vehicle.update(16.6666f / 1000.0f);
+		boolean colided = false;
+		
+		vehicle.updatePrediction(16.66f / 1000.0f);
+		
+		List<Entity> buildings = quad.query(vehicle.getPredictionRect());
+		for(Entity b : buildings)
+		{
+			if(vehicle.getPredictionRect().overlaps(b.getRect()))
+			{
+				colided = true;
+				break;
+			}
+		}
+		if(!colided)
+		{
+			vehicle.update(16.66f / 1000.0f);
+		}
+		else
+		{
+			Vector2D delta = vehicle.getDeltaVec();
+			vehicle.setVelocity(Vector2D.negative(vehicle.getVelocity().multiply(0.2f)).
+					add(delta.multiply(-1.0f)));
+			vehicle.inverseThrottle();
+		}
+		
 	}
 
 	private void display(Canvas canvas)
 	{
 		graphicsContext.setCanvas(canvas);
+		graphicsContext.generateViewRect();
 		graphicsContext.clear();
 		camera.applyTransform(graphicsContext);
 		onDrawTransformed(graphicsContext);

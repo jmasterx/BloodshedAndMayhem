@@ -55,7 +55,7 @@ public class Wheel
         return position;
     }
 
-    public Vector2D calculateForce(Vector2D relativeGroundSpeed, float timeStep)
+    public Vector2D calculateForce(Vector2D relativeGroundSpeed, float timeStep, boolean prediction)
     {
         //calculate speed of tire patch at ground
         Vector2D patchSpeed = Vector2D.scalarMultiply(Vector2D.scalarMultiply(
@@ -74,6 +74,8 @@ public class Wheel
         Vector2D responseForce = Vector2D.scalarMultiply(Vector2D.negative(sideVel), 2.0f);
         responseForce =  Vector2D.subtract(responseForce, forwardVel);
 
+        float topSpeed = 500.0f;
+        
         //calculate torque on wheel
         wheelTorque += forwardMag * wheelRadius;
 
@@ -81,9 +83,9 @@ public class Wheel
         wheelSpeed += wheelTorque / wheelInertia * timeStep;
         
         //top speed limit (kind of a hack)
-        if(wheelSpeed > 800.0f)
+        if(wheelSpeed > topSpeed)
         {
-        	wheelSpeed = 800.0f;
+        	wheelSpeed = topSpeed;
         }
 
         //clear our transmission torque accumulator

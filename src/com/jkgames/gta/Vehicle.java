@@ -14,12 +14,12 @@ public class Vehicle extends RigidBody
     public void initialize(Vector2D halfSize, float mass, Bitmap bitmap)
     {
         //front wheels
-        wheels[0] = new Wheel(new Vector2D(halfSize.x, halfSize.y), 0.6f);
-        wheels[1] = new Wheel(new Vector2D(-halfSize.x, halfSize.y), 0.6f);
+        wheels[0] = new Wheel(new Vector2D(halfSize.x, halfSize.y), 0.45f);
+        wheels[1] = new Wheel(new Vector2D(-halfSize.x, halfSize.y), 0.45f);
 
         //rear wheels
-        wheels[2] = new Wheel(new Vector2D(halfSize.x, -halfSize.y), 0.6f);
-        wheels[3] = new Wheel(new Vector2D(-halfSize.x, -halfSize.y), 0.6f);
+        wheels[2] = new Wheel(new Vector2D(halfSize.x, -halfSize.y), 0.75f);
+        wheels[3] = new Wheel(new Vector2D(-halfSize.x, -halfSize.y), 0.75f);
 
         super.initialize(halfSize, mass, bitmap);
     }
@@ -36,7 +36,7 @@ public class Vehicle extends RigidBody
 
     public void setThrottle(float throttle, boolean allWheel)
     {
-        float torque = 65.0f;
+        float torque = 85.0f;
         throttled = true;
 
         //apply transmission torque to back wheels
@@ -50,6 +50,7 @@ public class Vehicle extends RigidBody
         wheels[3].addTransmissionTorque(throttle * torque);
     }
 
+
     public void setBrakes(float brakes)
     {
         float brakeTorque = 15.0f;
@@ -62,20 +63,20 @@ public class Vehicle extends RigidBody
         }
     }
 
-    public void update(float timeStep)
+    public void doUpdate(float timeStep, boolean prediction)
     {
         for (Wheel wheel : wheels)
         {
         	float wheelVel = wheel.getWheelSpeed();
          
         	//apply negative force to naturally slow down car
-        	if(!throttled)
+        	if(!throttled && !prediction)
         	wheel.addTransmissionTorque(-wheelVel * 0.11f);
             
             Vector2D worldWheelOffset = relativeToWorld(wheel.getAnchorPoint());
             Vector2D worldGroundVel = pointVelocity(worldWheelOffset);
             Vector2D relativeGroundSpeed = worldToRelative(worldGroundVel);
-            Vector2D relativeResponseForce = wheel.calculateForce(relativeGroundSpeed, timeStep);
+            Vector2D relativeResponseForce = wheel.calculateForce(relativeGroundSpeed, timeStep,prediction);
             Vector2D worldResponseForce = relativeToWorld(relativeResponseForce);
 
             applyForce(worldResponseForce, worldWheelOffset);
@@ -84,6 +85,35 @@ public class Vehicle extends RigidBody
         //no throttling yet this frame
         throttled = false;
 
-        super.update(timeStep);
+        if(prediction)
+        {
+        	super.updatePrediction(timeStep);
+        }
+        else
+        {
+        	super.update(timeStep);
+        }
+        
+    }
+    
+    @Override
+    public void update(float timeStep)
+    {
+    	doUpdate(timeStep,false);
+    }
+    
+    public void updatePrediction(float timeStep)
+    {
+    	doUpdate(timeStep,true);
+    }
+    
+    public void inverseThrottle()
+    {
+    	float scalar = 0.2f;
+    	for(Wheel wheel : wheels)
+    	{
+    		wheel.setTransmissionTorque(-wheel.getTransmissionTourque() * scalar);
+    		wheel.setWheelSpeed(-wheel.getWheelSpeed() * 0.1f);
+    	}
     }
 }

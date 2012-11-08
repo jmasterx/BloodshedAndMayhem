@@ -21,7 +21,7 @@ public class Light extends Entity
 	public void draw(GraphicsContext g)
 	{
 		g.additiveBlend();
-		g.getCanvas().drawBitmap(image, null, getRect(), paint);
+		g.drawBitmap(image, getCenterX(),getCenterY(), paint);
 		g.restoreBlend();
 	}
 }

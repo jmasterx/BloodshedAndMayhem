@@ -26,6 +26,7 @@ public class Road extends Entity
 	{
 		//Rect clipRect = c.getCanvas().getClipBounds();
 		//c.getCanvas().clipRect(getRect());
+		OBB2D view = c.getViewRect();
 		float sizeW;
 		float sizeH;
 		if(isTopBottom())
@@ -47,19 +48,31 @@ public class Road extends Entity
 		{
 			if(isTopBottom())
 			{
-				c.drawRotatedScaledBitmap(
+				float x = getRect().left();
+				float y = getRect().top() + (sizeH  * i);
+				
+				if(view.overlaps(x,y,x +sizeW, y + sizeH))
+				{
+						c.drawRotatedScaledBitmap(
 						image,
-						getRect().left + (sizeW / 2.0f),
-						(getRect().top + (sizeH / 2.0f)) + (sizeH * i), 
+						x + (sizeW / 2.0f),
+						y + (sizeH / 2.0f), 
 						sizeW, sizeH, 0.0f);
+				}
+			
 			}
 			else
 			{
-				c.drawRotatedScaledBitmap(
-						image,
-						getRect().left + (sizeH / 2.0f) + (sizeH * i),
-						getRect().top + (sizeH / 2.0f), 
-						sizeW, sizeH, (float)Math.PI / 2.0f);
+				float x = getRect().left() +  (sizeW  * i);
+				float y = getRect().top();
+				if(view.overlaps(x,y,x + sizeW,y + sizeH))
+				{
+					c.drawRotatedScaledBitmap(
+							image,
+							x + (sizeH / 2.0f),
+							y + (sizeH / 2.0f), 
+							sizeW, sizeH, (float)Math.PI / 2.0f);
+				}
 			}
 			
 		}

@@ -32,10 +32,11 @@ public class City implements IDrawable
 	
 	public void draw(GraphicsContext c)
 	{
-		RectF screen = c.getViewRect();
+		
+		OBB2D screen = c.getViewRect();
 		for(Road r : roads)
 		{
-			if(RectF.intersects(screen, r.getRect()) || screen.contains(r.getRect()))
+			if(screen.overlaps(r.getRect()))
 			{
 				r.draw(c);
 			}
@@ -43,18 +44,25 @@ public class City implements IDrawable
 		
 		for(Intersection i : intersections)
 		{
-			if(RectF.intersects(screen, i.getRect()) || screen.contains(i.getRect()))
+			if(screen.overlaps(i.getRect()))
 			{
 				i.draw(c);
 			}
 		}
 		
+		/*
 		for(Building b : buildings)
 		{
-			if(RectF.intersects(screen, b.getRect()) || screen.contains(b.getRect()))
+			if(screen.overlaps(b.getRect()))
 			{
 				b.draw(c);
 			}
 		}
+		*/
+	}
+	
+	ArrayList<Building> getBuildings()
+	{
+		return buildings;
 	}
 }

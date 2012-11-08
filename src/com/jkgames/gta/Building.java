@@ -90,6 +90,6 @@ public class Building extends Entity
 	public void draw(GraphicsContext c)
 	{
 		c.drawRotatedScaledBitmap(image, getCenterX(), getCenterY(),
-				image.getWidth() * getScale(), image.getHeight() * getScale(), getDirection() * (float)Math.PI / 2.0f);
+				image.getWidth() * getScale() * 1.02f, image.getHeight() * getScale() * 1.02f, getDirection() * (float)Math.PI / 2.0f);
 	}
 }

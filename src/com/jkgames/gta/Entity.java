@@ -7,71 +7,56 @@ import android.opengl.GLES20;
 
 public class Entity implements IDrawable
 {
-	RectF rect = new RectF();
-	float angle = 0.0f;
+	OBB2D rect = new OBB2D(new Vector2D(0.0f,0.0f),1.0f,1.0f,0.0f);
 
 	public float getAngle() 
 	{
-		return angle;
+		return rect.getAngle();
 	}
 	
 	public void setAngle(float angle)
 	{
-		this.angle = angle;
+		rect.setAngle(angle);
 	}
 
-	public RectF getRect() 
+	public OBB2D getRect() 
 	{
 		return rect;
 	}
 
 	public void setRect(RectF rect) 
 	{
-		this.rect.top = rect.top;
-		this.rect.left = rect.left;
-		this.rect.bottom = rect.bottom;
-		this.rect.right = rect.right;
+		this.rect.set(rect);
 	}
 	
 	public float getWidth()
 	{
-		return getRect().width();
+		return getRect().getWidth();
 	}
 	
 	public float getHeight()
 	{
-		return getRect().height();
+		return getRect().getHeight();
 	}
 	
 	public float getCenterX()
 	{
-		return getRect().centerX();
+		return getRect().getCenter().x;
 	}
 	
 	public float getCenterY()
 	{
-		return getRect().centerY();
+		return getRect().getCenter().y;
 	}
 	
 	public void setCenter(float x, float y)
 	{
-		float w = getWidth();
-		float h = getHeight();
-		
-		getRect().left = x - (w / 2.0f);
-		getRect().top = y - (h / 2.0f);
-		getRect().right = x + (w / 2.0f);
-		getRect().bottom = y + (h / 2.0f);
+		getRect().moveTo(new Vector2D(x,y));
 	}
 	
 	public void setSize(float w, float h)
-	{	
-		float x = getCenterX();
-		float y = getCenterY();
-		getRect().left = x - (w / 2.0f);
-		getRect().top = y - (h / 2.0f);
-		getRect().right = x + (w / 2.0f);
-		getRect().bottom = y + (h / 2.0f);
+	{
+		rect.setSize(w, h);
 	}
 
 	public void setRadius(float radius)

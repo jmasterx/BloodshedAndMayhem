@@ -3,16 +3,18 @@ package com.jkgames.gta;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.RectF;
 
 //our simulation object
 class RigidBody extends Entity
 {
   //linear
-  private Vector2D position = new Vector2D();
   private Vector2D velocity = new Vector2D();
   private Vector2D forces = new Vector2D();
+  private OBB2D predictionRect = new OBB2D(new Vector2D(), 1.0f, 1.0f, 0.0f);
   private float mass;
+  private Vector2D deltaVec;
 
   //angular
   private float angularVelocity;
@@ -39,39 +41,100 @@ class RigidBody extends Entity
       image = bitmap;
       inertia = (1.0f / 20.0f) * (halfSize.x * halfSize.x) * (halfSize.y * halfSize.y) * mass;
 
-      rect.left = (int)-halfSize.x;
-      rect.top = (int)-halfSize.y;
+      RectF rect = new RectF();
+      float scalar = 10.0f;
+      rect.left = (int)-halfSize.x * scalar;
+      rect.top = (int)-halfSize.y * scalar;
      
-      rect.right = rect.left + (int)(halfSize.x * 2.0f);
-      rect.bottom = rect.top + (int)(halfSize.y * 2.0f);
+      rect.right = rect.left + (int)(halfSize.x * 2.0f * scalar);
+      rect.bottom = rect.top + (int)(halfSize.y * 2.0f * scalar);
+      setRect(rect);
+      predictionRect.set(rect);
+      
   }
 
   public void setLocation(Vector2D position, float angle)
   {
-      this.position = position;
-      setAngle(angle);
+      getRect().set(position, getWidth(), getHeight(), angle);
+  }
+  
+  public void setPredictionLocation(Vector2D position, float angle)
+  {
+      getPredictionRect().set(position, getWidth(), getHeight(), angle);
+  }
+  
+  public void setPredictionCenter(Vector2D center)
+  {
+      getPredictionRect().moveTo(center);
+  }
+  
+  public void setPredictionAngle(float angle)
+  {
+	  predictionRect.setAngle(angle);
   }
 
   public Vector2D getPosition()
   {
-      return position;
+      return getRect().getCenter();
+  }
+  
+  public OBB2D getPredictionRect()
+  {
+	  return predictionRect;
   }
 
   @Override
   public void update(float timeStep)
   {
+	  doUpdate(false,timeStep);
+  }
+  
+  public void doUpdate(boolean prediction, float timeStep)
+  {
       //integrate physics
       //linear
       Vector2D acceleration = Vector2D.scalarDivide(forces, mass);
-      velocity = Vector2D.add(velocity, Vector2D.scalarMultiply(acceleration, timeStep));
-      position = Vector2D.add(position, Vector2D.scalarMultiply(velocity , timeStep));
-      forces = new Vector2D(0,0); //clear forces
+      if(prediction)
+      {
+    	   Vector2D velocity = Vector2D.add(this.velocity, Vector2D.scalarMultiply(acceleration, timeStep));
+    	      Vector2D c = getRect().getCenter();
+    	      c = Vector2D.add(getRect().getCenter(), Vector2D.scalarMultiply(velocity , timeStep));
+    	      setPredictionCenter(c);
+    	      //forces = new Vector2D(0,0); //clear forces
+      }
+      else
+      {
+    	    velocity = Vector2D.add(velocity, Vector2D.scalarMultiply(acceleration, timeStep));
+    	      Vector2D c = getRect().getCenter();
+    	      Vector2D v = Vector2D.add(getRect().getCenter(), Vector2D.scalarMultiply(velocity , timeStep));
+    	      deltaVec = v.subtract(c);
+    	      deltaVec.normalize();
+    	      setCenter(v.x, v.y);
+    	      forces = new Vector2D(0,0); //clear forces
+      }
+  
 
       //angular
       float angAcc = torque / inertia;
-      angularVelocity += angAcc * timeStep;
-      setAngle(getAngle() +  angularVelocity * timeStep);
-      torque = 0; //clear torque
+      if(prediction)
+      {
+    	 float angularVelocity = this.angularVelocity + angAcc * timeStep;
+         setPredictionAngle(getAngle() +  angularVelocity * timeStep);  
+         //torque = 0; //clear torque
+      }
+      else
+      {
+    	  angularVelocity += angAcc * timeStep;
+          setAngle(getAngle() +  angularVelocity * timeStep);  
+          torque = 0; //clear torque
+      }
+     
+   
+  }
+  
+  public void updatePrediction(float timeStep)
+  {
+	  doUpdate(true, timeStep);
   }
 
   //take a relative Vector2D and make it a world Vector2D
@@ -123,7 +186,22 @@ class RigidBody extends Entity
   public void draw( GraphicsContext c)
   {
       c.drawRotatedScaledBitmap(image, getPosition().x, getPosition().y,
-    		  halfSize.x * 20, halfSize.y * 20, getAngle());
+    		  getWidth(), getHeight(), getAngle());
   }
 
+	public Vector2D getVelocity()
+	{
+		return velocity;
+	}
+	
+	public void setVelocity(Vector2D velocity)
+	{
+		this.velocity = velocity;
+	}
+	
+	public Vector2D getDeltaVec()
+	{
+		return deltaVec;
+	}
+  
 }

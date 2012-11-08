@@ -63,7 +63,8 @@ public class AnalogStick extends Entity
 	
 	public void draw(GraphicsContext c)
 	{
-		c.getCanvas().drawBitmap(mainStickImg, null, getRect(), null);
+		c.drawRotatedScaledBitmap(mainStickImg,
+				getCenterX(), getCenterY(), getWidth(), getHeight(), getAngle());
 		c.getCanvas().drawBitmap(innerStickImg, null, getInnerStickRect(), null);
 	}
 
