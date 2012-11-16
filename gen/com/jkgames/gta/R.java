@@ -26,18 +26,28 @@ public final class R {
     }
     public static final class drawable {
         public static final int analog_stick=0x7f020000;
-        public static final int building=0x7f020001;
-        public static final int ic_action_search=0x7f020002;
-        public static final int ic_launcher=0x7f020003;
-        public static final int light=0x7f020004;
-        public static final int main_road=0x7f020005;
-        public static final int road_intersection=0x7f020006;
-        public static final int road_intersection_three_way=0x7f020007;
-        public static final int road_intersection_two_way=0x7f020008;
-        public static final int side_walk=0x7f020009;
-        public static final int sub_analog_stick=0x7f02000a;
-        public static final int taxi=0x7f02000b;
-        public static final int temp_button=0x7f02000c;
+        public static final int brake=0x7f020001;
+        public static final int building=0x7f020002;
+        public static final int bus=0x7f020003;
+        public static final int door=0x7f020004;
+        public static final int fist=0x7f020005;
+        public static final int gas=0x7f020006;
+        public static final int gta1=0x7f020007;
+        public static final int ic_action_search=0x7f020008;
+        public static final int ic_launcher=0x7f020009;
+        public static final int light=0x7f02000a;
+        public static final int main_road=0x7f02000b;
+        public static final int police=0x7f02000c;
+        public static final int road_intersection=0x7f02000d;
+        public static final int road_intersection_three_way=0x7f02000e;
+        public static final int road_intersection_two_way=0x7f02000f;
+        public static final int run=0x7f020010;
+        public static final int shoot=0x7f020011;
+        public static final int side_walk=0x7f020012;
+        public static final int sportscar=0x7f020013;
+        public static final int sub_analog_stick=0x7f020014;
+        public static final int taxi=0x7f020015;
+        public static final int temp_button=0x7f020016;
     }
     public static final class id {
         public static final int background_button=0x7f090005;

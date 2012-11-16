@@ -4,13 +4,21 @@ import android.graphics.Matrix;
 
 public class Wheel
 {
-    private Vector2D forwardVec;
-    private Vector2D sideVec;
+    private Vector2D forwardVec = new Vector2D();
+    private Vector2D sideVec = new Vector2D();
+    private static Vector2D sideVel = new Vector2D();
+    private static Vector2D forwardVel = new Vector2D();
+    
     private float wheelTorque;
     private float wheelSpeed;
     private float wheelInertia;
     private float wheelRadius;
     private Vector2D position = new Vector2D();
+    private static float forwardMag;
+    private static Vector2D responseForce = new Vector2D();
+    private static float []vecArray = new float[4];
+    private static Matrix mat = new Matrix();
+    
 
     public Wheel(Vector2D position, float radius)
     {
@@ -23,9 +31,7 @@ public class Wheel
 
     public void setSteeringAngle(float newAngle)
     {
-            Matrix mat = new Matrix();
-
-            float []vecArray = new float[4];
+    		mat.reset();
             //forward Vector
             vecArray[0] = 0;
             vecArray[1] = 1;
@@ -36,8 +42,10 @@ public class Wheel
             mat.postRotate(newAngle / (float)Math.PI * 180.0f);
             mat.mapVectors(vecArray);
 
-            forwardVec = new Vector2D(vecArray[0], vecArray[1]);
-            sideVec = new Vector2D(vecArray[2], vecArray[3]);
+            forwardVec.x = vecArray[0];
+            forwardVec.y = vecArray[1];
+            sideVec.x = vecArray[2];
+            sideVec.y = vecArray[3];
     }
 
     public void addTransmissionTorque(float newValue)
@@ -55,24 +63,32 @@ public class Wheel
         return position;
     }
 
-    public Vector2D calculateForce(Vector2D relativeGroundSpeed, float timeStep, boolean prediction)
+    public Vector2D calculateForce(Vector2D relativeGroundSpeed, float timeStep)
     {
         //calculate speed of tire patch at ground
-        Vector2D patchSpeed = Vector2D.scalarMultiply(Vector2D.scalarMultiply(
-        		Vector2D.negative(forwardVec), wheelSpeed), wheelRadius);
+    	float px,py;
+    	px = (-forwardVec.x * wheelSpeed) * wheelRadius;
+    	py = (-forwardVec.y * wheelSpeed) * wheelRadius;
+  
        
         //get velocity difference between ground and patch
-        Vector2D velDifference = Vector2D.add(relativeGroundSpeed , patchSpeed);
+    	
+        float velDifferenceX = relativeGroundSpeed.x + px;
+        float velDifferenceY = relativeGroundSpeed.y + py;
 
         //project ground speed onto side axis
-        Float forwardMag = new Float(0.0f);
-        Vector2D sideVel = velDifference.project(sideVec);
-        Vector2D forwardVel = velDifference.project(forwardVec, forwardMag);
+      
+        
+       Vector2D.project(velDifferenceX,velDifferenceY,sideVec.x,sideVec.y,sideVel);
+        forwardMag = Vector2D.project(velDifferenceX,velDifferenceY,
+        		forwardVec.x,forwardVec.y,forwardVel);
 
         //calculate super fake friction forces
         //calculate response force
-        Vector2D responseForce = Vector2D.scalarMultiply(Vector2D.negative(sideVel), 2.0f);
-        responseForce =  Vector2D.subtract(responseForce, forwardVel);
+        responseForce.x = -sideVel.x * 2.0f;
+        responseForce.y = -sideVel.y * 2.0f;
+        responseForce.x -= forwardVel.x;
+        responseForce.y -= forwardVel.y;
 
         float topSpeed = 500.0f;
         

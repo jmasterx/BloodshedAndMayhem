@@ -10,7 +10,7 @@ public class Camera
 	private float beginPosY;
 	private float beginScale;
 	private float scale;
-	private OBB2D camRect = new OBB2D(new Vector2D(),1.0f,1.0f,0.0f);
+	private OBB2D camRect = new OBB2D(0.0f,0.0f,1.0f,1.0f,0.0f);
 	
 	public Camera()
 	{
@@ -88,7 +88,7 @@ public class Camera
 		float cx = getPositionX() * 1.0f / getScale();
 		cx += w / 2;
 		
-		camRect.set(new Vector2D(cx,cy), w, h, 0.0f);
+		camRect.set(cx,cy, w, h, 0.0f);
 		
 		return camRect;
 	}

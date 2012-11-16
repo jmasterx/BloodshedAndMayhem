@@ -93,15 +93,19 @@ public class InputHandler implements IDrawable
 
 	public InputHandler(Resources res)
 	{
-		Bitmap tempButton = BitmapFactory.decodeResource(res, R.drawable.temp_button);
 		Bitmap stickImg = BitmapFactory.decodeResource(res, R.drawable.analog_stick);
 		Bitmap subStickImg = BitmapFactory.decodeResource(res, R.drawable.sub_analog_stick);
 		
-		buttons.add(new ControlButton(tempButton,50,ControlButton.BUTTON_STEAL_CAR));
-		buttons.add(new ControlButton(tempButton,50,ControlButton.BUTTON_CHANGE_WEAPON));
-		buttons.add(new ControlButton(tempButton,50,ControlButton.BUTTON_FIRE_WEAPON));
-		buttons.add(new ControlButton(tempButton,50,ControlButton.BUTTON_GAS));
-		buttons.add(new ControlButton(tempButton,50,ControlButton.BUTTON_BRAKE));
+		buttons.add(new ControlButton(BitmapFactory.decodeResource(res, R.drawable.door),
+				50,ControlButton.BUTTON_STEAL_CAR));
+		buttons.add(new ControlButton(BitmapFactory.decodeResource(res, R.drawable.shoot),
+				50,ControlButton.BUTTON_CHANGE_WEAPON));
+		buttons.add(new ControlButton(BitmapFactory.decodeResource(res, R.drawable.fist),
+				50,ControlButton.BUTTON_FIRE_WEAPON));
+		buttons.add(new ControlButton(BitmapFactory.decodeResource(res, R.drawable.gas),
+				50,ControlButton.BUTTON_GAS));
+		buttons.add(new ControlButton(BitmapFactory.decodeResource(res, R.drawable.brake),
+				50,ControlButton.BUTTON_BRAKE));
 		
 		analogStick = new AnalogStick(stickImg, subStickImg, 65);
 	}
@@ -113,8 +117,9 @@ public class InputHandler implements IDrawable
 	
 	public ControlButton getButton(int id)
 	{
-		for (ControlButton button : buttons)
+		for (int i = 0; i < buttons.size(); ++i)
 		{
+			ControlButton button = buttons.get(i);
 			if (button.getId() == id)
 			{
 				return button;
@@ -126,8 +131,9 @@ public class InputHandler implements IDrawable
 	
 	public boolean isPressed(int id)
 	{
-		for (ControlButton button : buttons)
+		for (int i = 0; i < buttons.size(); ++i)
 		{
+			ControlButton button = buttons.get(i);
 			if (button.getId() == id)
 			{
 				if (button.isPressed())
@@ -185,17 +191,32 @@ public class InputHandler implements IDrawable
 		screenWidth = w;
 		screenHeight = h;
 		
-		for(int i = 0; i < buttons.size(); ++i)
+		float gap = screenWidth * 0.025f;
+		float btnSize = screenWidth * 0.05f;
+		for(int i = 0; i  < buttons.size(); ++i)
 		{
-			buttons.get(i).setCenter(w * 0.85f,20 + i * 120);
+			buttons.get(i).setRadius(btnSize);
+			buttons.get(i).setVisible(false);
 		}
+		getButton(ControlButton.BUTTON_GAS).setVisible(true);
+		getButton(ControlButton.BUTTON_BRAKE).setVisible(true);
+		getButton(ControlButton.BUTTON_GAS).
+		setCenter(screenWidth - getButton(ControlButton.BUTTON_GAS).getWidth() - gap, 
+				screenHeight - getButton(ControlButton.BUTTON_GAS).getHeight() - gap);
+		
+		getButton(ControlButton.BUTTON_BRAKE).
+		setCenter(screenWidth - 
+				(getButton(ControlButton.BUTTON_BRAKE).getWidth() * 2) - gap - (gap * 0.5f), 
+				screenHeight - getButton(ControlButton.BUTTON_BRAKE).getHeight() - gap);
+		
 	}
 	
 	private boolean containsInputEvent(int id)
 	{
-		for(Input i : inputEvents)
+		for(int i = 0; i < inputEvents.size(); ++i)
 		{
-			if(i.getId() == id)
+			Input in = inputEvents.get(i);
+			if(in.getId() == id)
 			{
 				return true;
 			}
@@ -206,11 +227,12 @@ public class InputHandler implements IDrawable
 	
 	private Input getInputEvent(int id)
 	{
-		for(Input i : inputEvents)
+		for(int i = 0; i < inputEvents.size(); ++i)
 		{
-			if(i.getId() == id)
+			Input in = inputEvents.get(i);
+			if(in.getId() == id)
 			{
-				return i;
+				return in;
 			}
 		}
 		
@@ -219,11 +241,12 @@ public class InputHandler implements IDrawable
 	
 	private Input getAnalogStickInput()
 	{
-		for(Input i : inputEvents)
+		for(int i = 0; i < inputEvents.size(); ++i)
 		{
-			if(i.getStick() != null)
+			Input in = inputEvents.get(i);
+			if(in.getStick() != null)
 			{
-				return i;
+				return in;
 			}
 		}
 		
@@ -232,11 +255,12 @@ public class InputHandler implements IDrawable
 	
 	private Input getButtonInput(ControlButton button)
 	{
-		for(Input i : inputEvents)
+		for(int i = 0; i < inputEvents.size(); ++i)
 		{
-			if(i.getButton() == button)
+			Input in = inputEvents.get(i);
+			if(in.getButton() == button)
 			{
-				return i;
+				return in;
 			}
 		}
 		
@@ -245,8 +269,9 @@ public class InputHandler implements IDrawable
 	
 	public ControlButton getButtonAt(float x, float y)
 	{
-		for(ControlButton b : buttons)
+		for(int i = 0; i < buttons.size(); ++i)
 		{
+			ControlButton b = buttons.get(i);
 			if(b.pointInside(x, y))
 			{
 				return b;
@@ -354,8 +379,9 @@ public class InputHandler implements IDrawable
 
 	public void draw(GraphicsContext c) 
 	{
-		for (ControlButton button : buttons)
+		for (int i = 0; i < buttons.size(); ++i)
 		{
+			ControlButton button = buttons.get(i);
 			if (button.isVisible())
 			{
 				button.draw(c);

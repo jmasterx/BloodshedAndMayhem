@@ -174,5 +174,31 @@ public class Vector2D
         mag = thisDotV;
         return scalarMultiply(v, thisDotV);
     }
+    
+    public static float dot(float x1, float y1, float x2, float y2)
+    {
+    	return (x1 * x2) + (y1 * y2);
+    }
+    
+    public static float project(float v1x, float v1y, float v2x, float v2y, Vector2D result)
+    {
+        float thisDotV = Vector2D.dot(v1x, v1y,v2x,v2y);
+        
+        result.x = v2x * thisDotV;
+        result.y = v2y * thisDotV;
+        return thisDotV;
+    }
 
+    public void equals(Vector2D v)
+    {
+    	x = v.x;
+    	y = v.y;
+    }
+    
+    public void perpendicular(float x1, float y1)
+    {
+    	x = -y1;
+    	y = x1;
+    	
+    }
 }

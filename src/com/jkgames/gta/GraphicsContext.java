@@ -17,6 +17,7 @@ public class GraphicsContext
 	private Paint paint = new Paint();
 	private Camera camera;
 	private OBB2D viewRect;
+	private  boolean hasIdentity = false;
 
 	public GraphicsContext()
 	{
@@ -43,7 +44,16 @@ public class GraphicsContext
 	public void setCanvas(Canvas canvas) 
 	{
 		this.canvas = canvas;
-		identityMatrix.set(canvas.getMatrix());
+		if(!hasIdentity)
+		{
+			hasIdentity = true;
+			setIdentity(canvas.getMatrix());
+		}
+	}
+	
+	public void setIdentity(Matrix m)
+	{
+		identityMatrix.set(m);
 	}
 	
 	public void drawRotatedScaledBitmap(Bitmap b, 

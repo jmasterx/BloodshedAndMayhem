@@ -25,6 +25,8 @@ public class Intersection extends Entity
 	{
 		setRect(rect);
 		setImage(image);
+		setSolid(false);
+		setLayer(LAYER_INTERSECTION);
 	}
 	
 	public Road getTopRoad() 

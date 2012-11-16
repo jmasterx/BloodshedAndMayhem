@@ -1,7 +1,8 @@
 package com.jkgames.gta;
 
+import java.util.ArrayList;
+
 import android.graphics.Bitmap;
-import android.graphics.Rect;
 import android.graphics.RectF;
 
 public class Road extends Entity
@@ -10,6 +11,7 @@ public class Road extends Entity
 	private Intersection startIntersection;
 	private Intersection endIntersection;
 	private boolean topBottom;
+	private ArrayList<RoadSection> sections = new ArrayList<RoadSection>(); 
 
 	public Road(RectF rect, Intersection start, Intersection end,
 			Bitmap image, boolean topBottom)
@@ -19,14 +21,13 @@ public class Road extends Entity
 		setEndIntersection(end);
 		setImage(image);
 		setTopBottom(topBottom);
+		setSolid(false);
+		generateSubRoads();
+		setLayer(LAYER_ROAD);
 	}
 	
-	@Override
-	public void draw(GraphicsContext c)
+	private void generateSubRoads()
 	{
-		//Rect clipRect = c.getCanvas().getClipBounds();
-		//c.getCanvas().clipRect(getRect());
-		OBB2D view = c.getViewRect();
 		float sizeW;
 		float sizeH;
 		if(isTopBottom())
@@ -51,33 +52,34 @@ public class Road extends Entity
 				float x = getRect().left();
 				float y = getRect().top() + (sizeH  * i);
 				
-				if(view.overlaps(x,y,x +sizeW, y + sizeH))
-				{
-						c.drawRotatedScaledBitmap(
-						image,
-						x + (sizeW / 2.0f),
-						y + (sizeH / 2.0f), 
-						sizeW, sizeH, 0.0f);
-				}
-			
+				sections.add(new RoadSection(this, image,
+						x + (sizeW / 2.0f), 
+						y + (sizeH / 2.0f), sizeW, sizeH, 0.0f));
 			}
 			else
 			{
 				float x = getRect().left() +  (sizeW  * i);
 				float y = getRect().top();
-				if(view.overlaps(x,y,x + sizeW,y + sizeH))
-				{
-					c.drawRotatedScaledBitmap(
-							image,
-							x + (sizeH / 2.0f),
-							y + (sizeH / 2.0f), 
-							sizeW, sizeH, (float)Math.PI / 2.0f);
-				}
+				sections.add(new RoadSection(this, image,
+						x + (sizeW / 2.0f), 
+						y + (sizeH / 2.0f), sizeW, sizeH,  (float)Math.PI / 2.0f));
 			}
 			
 		}
-		
-	//	c.getCanvas().clipRect(clipRect);
+	}
+	
+	public ArrayList<RoadSection> getSubRoads()
+	{
+		return sections;
+	}
+	
+	@Override
+	public void draw(GraphicsContext c)
+	{
+		for(RoadSection s : sections)
+		{
+			s.draw(c);
+		}
 	}
 	
 	public Bitmap getImage() 

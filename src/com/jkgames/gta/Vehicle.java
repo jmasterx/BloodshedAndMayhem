@@ -10,6 +10,14 @@ public class Vehicle extends RigidBody
     
     private Wheel [] wheels = new Wheel[4];
     private boolean throttled = false;
+    
+    private static Vector2D worldWheelOffset = new Vector2D();
+    private static Vector2D worldGroundVel = new Vector2D();
+    private static Vector2D relativeGroundSpeed = new Vector2D();
+    private static Vector2D relativeResponseForce = new Vector2D();
+    private static Vector2D worldResponseForce = new Vector2D();
+    
+    
 
     public void initialize(Vector2D halfSize, float mass, Bitmap bitmap)
     {
@@ -26,7 +34,7 @@ public class Vehicle extends RigidBody
 
     public void setSteering(float steering)
     {
-        float steeringLock = 0.11f;
+        float steeringLock = 0.13f;
 
         //apply steering angle to front wheels
         wheels[0].setSteeringAngle(steering * steeringLock);
@@ -63,21 +71,21 @@ public class Vehicle extends RigidBody
         }
     }
 
-    public void doUpdate(float timeStep, boolean prediction)
+    public void doVehicleUpdate(float timeStep)
     {
         for (Wheel wheel : wheels)
         {
         	float wheelVel = wheel.getWheelSpeed();
          
         	//apply negative force to naturally slow down car
-        	if(!throttled && !prediction)
-        	wheel.addTransmissionTorque(-wheelVel * 0.11f);
+        	if(!throttled)
+        	wheel.addTransmissionTorque(-wheelVel * 0.13f);
             
-            Vector2D worldWheelOffset = relativeToWorld(wheel.getAnchorPoint());
-            Vector2D worldGroundVel = pointVelocity(worldWheelOffset);
-            Vector2D relativeGroundSpeed = worldToRelative(worldGroundVel);
-            Vector2D relativeResponseForce = wheel.calculateForce(relativeGroundSpeed, timeStep,prediction);
-            Vector2D worldResponseForce = relativeToWorld(relativeResponseForce);
+            worldWheelOffset.equals(relativeToWorld(wheel.getAnchorPoint()));
+            worldGroundVel.equals(pointVelocity(worldWheelOffset));
+            relativeGroundSpeed.equals(worldToRelative(worldGroundVel));
+            relativeResponseForce.equals(wheel.calculateForce(relativeGroundSpeed, timeStep));
+            worldResponseForce.equals(relativeToWorld(relativeResponseForce));
 
             applyForce(worldResponseForce, worldWheelOffset);
         }
@@ -85,35 +93,20 @@ public class Vehicle extends RigidBody
         //no throttling yet this frame
         throttled = false;
 
-        if(prediction)
-        {
-        	super.updatePrediction(timeStep);
-        }
-        else
-        {
-        	super.update(timeStep);
-        }
+     
+        super.update(timeStep);
         
     }
     
     @Override
     public void update(float timeStep)
     {
-    	doUpdate(timeStep,false);
+    	doVehicleUpdate(timeStep);
     }
     
-    public void updatePrediction(float timeStep)
+    public float getSpeed()
     {
-    	doUpdate(timeStep,true);
+    	return wheels[0].getWheelSpeed();
     }
     
-    public void inverseThrottle()
-    {
-    	float scalar = 0.2f;
-    	for(Wheel wheel : wheels)
-    	{
-    		wheel.setTransmissionTorque(-wheel.getTransmissionTourque() * scalar);
-    		wheel.setWheelSpeed(-wheel.getWheelSpeed() * 0.1f);
-    	}
-    }
 }

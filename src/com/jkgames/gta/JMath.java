@@ -17,14 +17,14 @@ public class JMath
 	static public int colFromPos(float startX,float width, float x)
 	{
 		x -= startX;
-		return (int)Math.floor(x / width);
+		return (int)(x / width);
 		
 	}
 	
 	static public int rowFromPos(float startY,float height, float y)
 	{
 		y -= startY;
-		return (int)Math.floor(y / height);
+		return (int)(y / height);
 		
 	}
 	
@@ -37,6 +37,16 @@ public class JMath
 	{
 		return (float)Math.sqrt((Math.pow(a.centerX()-b.centerX(),2)) 
 				+ (Math.pow(a.centerY()-b.centerY(),2)));
+	}
+	
+	static public float min(float a, float b)
+	{
+		return a < b ? a : b;
+	}
+	
+	static public float max(float a, float b)
+	{
+		return a > b ? a : b;
 	}
 	
 	static public float distance(Vector2D a, Vector2D b)

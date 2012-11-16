@@ -19,6 +19,7 @@ public class Building extends Entity
 		setScale(scale);
 		setCenter(cx,cy);
 		setRect(scale,cx,cy,direction);
+		setLayer(LAYER_OBJECTS);
 	}
 	
 	public void setRect(float scale, float cx, float cy, int direction)
@@ -90,6 +91,6 @@ public class Building extends Entity
 	public void draw(GraphicsContext c)
 	{
 		c.drawRotatedScaledBitmap(image, getCenterX(), getCenterY(),
-				image.getWidth() * getScale() * 1.02f, image.getHeight() * getScale() * 1.02f, getDirection() * (float)Math.PI / 2.0f);
+				image.getWidth() * getScale() * 1.01f, image.getHeight() * getScale() * 1.01f, getDirection() * (float)Math.PI / 2.0f);
 	}
 }
