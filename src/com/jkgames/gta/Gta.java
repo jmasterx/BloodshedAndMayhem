@@ -18,17 +18,14 @@ import android.view.View.OnClickListener;
 
 public class Gta extends Activity implements OnClickListener
 {
-	private int gameDifficulty;
-	
     @Override
     public void onCreate(Bundle savedInstanceState) 
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
        
-        
-        View newGameButton = findViewById(R.id.new_game_button);
-        newGameButton.setOnClickListener(this);
+       View newGameButton = findViewById(R.id.new_game_button);
+       newGameButton.setOnClickListener(this);
     }
 
     @Override
@@ -44,18 +41,6 @@ public class Gta extends Activity implements OnClickListener
     {
     	switch(item.getItemId())
     	{
-    	case R.id.game_difficulty_button:
-    		new AlertDialog.Builder(this)
-    		.setTitle(R.string.difficulty_label)
-    		.setItems(array.difficulties, new DialogInterface.OnClickListener() {
-				
-				public void onClick(DialogInterface dialog, int which) 
-				{
-					gameDifficulty = which;
-				}
-			})
-			.show();
-    		break;
     	case R.id.exit_button:
     		finish();
     		return true;
@@ -77,7 +62,6 @@ public class Gta extends Activity implements OnClickListener
 	private void startNewGame()
 	{
 		Intent gIntent = new Intent(this,Game.class);
-		gIntent.putExtra("game_difficulty", gameDifficulty);
 		startActivity(gIntent);
 	}
 }

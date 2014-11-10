@@ -1,7 +1,9 @@
 package com.jkgames.gta;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -10,6 +12,37 @@ import android.view.MotionEvent;
 
 public class InputHandler implements IDrawable
 {
+	private class Pressed
+	{
+		private int id;
+		private boolean pressed;
+		
+		public Pressed(int id, boolean pressed)
+		{
+			setId(id);
+			setPressed(pressed);
+		}
+
+		public boolean isPressed() 
+		{
+			return pressed;
+		}
+
+		public void setPressed(boolean pressed) 
+		{
+			this.pressed = pressed;
+		}
+
+		public int getId()
+		{
+			return id;
+		}
+
+		public void setId(int id) 
+		{
+			this.id = id;
+		}
+	}
 	private class Input
 	{
 		private int id;
@@ -87,6 +120,7 @@ public class InputHandler implements IDrawable
 	private ArrayList<Input> inputEvents = new ArrayList<Input>();
 	private AnalogStick analogStick;		
 	private List<InputListener> inputListeners = new ArrayList<InputListener>();
+	private Queue<Pressed> pressed = new LinkedList<Pressed>();
 	
 	private int screenWidth;
 	private int screenHeight;
@@ -158,21 +192,7 @@ public class InputHandler implements IDrawable
 		if (tempButton.isPressed() != pressed)
 		{
 			tempButton.setPressed(pressed);
-			
-			if (pressed)
-			{
-				for (InputListener listener : inputListeners)
-				{
-					listener.onButtonPressed(tempButton, tempButton.getId()); 
-				}
-			}
-			else
-			{
-				for (InputListener listener : inputListeners)
-				{
-					listener.onButtonReleased(tempButton, tempButton.getId()); 
-				}
-			}
+			this.pressed.add(new Pressed(id, pressed));
 		}
 	}
 	
@@ -190,8 +210,12 @@ public class InputHandler implements IDrawable
 	{
 		screenWidth = w;
 		screenHeight = h;
-		
-		float gap = screenWidth * 0.025f;
+		layoutInCar();
+	}
+	
+	public void layoutInCar()
+	{
+		float gap = screenWidth * 0.022f;
 		float btnSize = screenWidth * 0.05f;
 		for(int i = 0; i  < buttons.size(); ++i)
 		{
@@ -200,15 +224,47 @@ public class InputHandler implements IDrawable
 		}
 		getButton(ControlButton.BUTTON_GAS).setVisible(true);
 		getButton(ControlButton.BUTTON_BRAKE).setVisible(true);
+		getButton(ControlButton.BUTTON_STEAL_CAR).setVisible(true);
+		getButton(ControlButton.BUTTON_STEAL_CAR).setRadius(btnSize * 0.8f);
 		getButton(ControlButton.BUTTON_GAS).
 		setCenter(screenWidth - getButton(ControlButton.BUTTON_GAS).getWidth() - gap, 
 				screenHeight - getButton(ControlButton.BUTTON_GAS).getHeight() - gap);
+		
+		getButton(ControlButton.BUTTON_STEAL_CAR).
+		setCenter(screenWidth - (getButton(ControlButton.BUTTON_GAS).getWidth() * 1.5f) - (gap * 1.5f), 
+				screenHeight - (getButton(ControlButton.BUTTON_GAS).getHeight() * 2.0f) - (gap * 2.0f));
 		
 		getButton(ControlButton.BUTTON_BRAKE).
 		setCenter(screenWidth - 
 				(getButton(ControlButton.BUTTON_BRAKE).getWidth() * 2) - gap - (gap * 0.5f), 
 				screenHeight - getButton(ControlButton.BUTTON_BRAKE).getHeight() - gap);
+	}
+	
+	public void layoutOnFoot()
+	{
+		float gap = screenWidth * 0.022f;
+		float btnSize = screenWidth * 0.05f;
+		for(int i = 0; i  < buttons.size(); ++i)
+		{
+			buttons.get(i).setRadius(btnSize);
+			buttons.get(i).setVisible(false);
+		}
+		//getButton(ControlButton.BUTTON_GAS).setVisible(true);
+		//getButton(ControlButton.BUTTON_BRAKE).setVisible(true);
+		getButton(ControlButton.BUTTON_STEAL_CAR).setVisible(true);
+		getButton(ControlButton.BUTTON_STEAL_CAR).setRadius(btnSize * 0.8f);
+		getButton(ControlButton.BUTTON_GAS).
+		setCenter(screenWidth - getButton(ControlButton.BUTTON_GAS).getWidth() - gap, 
+				screenHeight - getButton(ControlButton.BUTTON_GAS).getHeight() - gap);
 		
+		getButton(ControlButton.BUTTON_STEAL_CAR).
+		setCenter(screenWidth - (getButton(ControlButton.BUTTON_GAS).getWidth() * 1.5f) - (gap * 1.5f), 
+				screenHeight - (getButton(ControlButton.BUTTON_GAS).getHeight() * 2.0f) - (gap * 2.0f));
+		
+		getButton(ControlButton.BUTTON_BRAKE).
+		setCenter(screenWidth - 
+				(getButton(ControlButton.BUTTON_BRAKE).getWidth() * 2) - gap - (gap * 0.5f), 
+				screenHeight - getButton(ControlButton.BUTTON_BRAKE).getHeight() - gap);
 	}
 	
 	private boolean containsInputEvent(int id)
@@ -402,6 +458,29 @@ public class InputHandler implements IDrawable
 	public int getScreenHeight()
 	{
 		return screenHeight;
+	}
+	
+	public void update(float timeElapsed)
+	{
+		while(!pressed.isEmpty())
+		{
+			Pressed p = pressed.poll();
+			ControlButton tempButton = getButton(p.getId());
+			if (p.isPressed())
+			{
+				for (InputListener listener : inputListeners)
+				{
+					listener.onButtonPressed(tempButton, tempButton.getId()); 
+				}
+			}
+			else
+			{
+				for (InputListener listener : inputListeners)
+				{
+					listener.onButtonReleased(tempButton, tempButton.getId()); 
+				}
+			}
+		}
 	}
 	
 }

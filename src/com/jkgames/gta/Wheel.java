@@ -26,7 +26,7 @@ public class Wheel
         setSteeringAngle(0);
         wheelSpeed = 0;
         wheelRadius = radius;
-        wheelInertia = (radius * radius) * 1.1f;
+        wheelInertia = (radius * radius) * 1.0f;
     }
 
     public void setSteeringAngle(float newAngle)

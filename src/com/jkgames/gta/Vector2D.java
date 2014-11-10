@@ -189,7 +189,7 @@ public class Vector2D
         return thisDotV;
     }
 
-    public void equals(Vector2D v)
+    public void set(Vector2D v)
     {
     	x = v.x;
     	y = v.y;

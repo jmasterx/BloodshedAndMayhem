@@ -18,8 +18,12 @@ public class Vehicle extends RigidBody
     private static Vector2D worldResponseForce = new Vector2D();
     
     
-
-    public void initialize(Vector2D halfSize, float mass, Bitmap bitmap)
+	public Vehicle()
+	{
+		setType(TYPE_VEHICLE);	
+	}
+	
+	 public void initialize(Vector2D halfSize, float mass, Bitmap bitmap)
     {
         //front wheels
         wheels[0] = new Wheel(new Vector2D(halfSize.x, halfSize.y), 0.45f);
@@ -34,7 +38,7 @@ public class Vehicle extends RigidBody
 
     public void setSteering(float steering)
     {
-        float steeringLock = 0.13f;
+        float steeringLock = 3.7f;
 
         //apply steering angle to front wheels
         wheels[0].setSteeringAngle(steering * steeringLock);
@@ -44,7 +48,7 @@ public class Vehicle extends RigidBody
 
     public void setThrottle(float throttle, boolean allWheel)
     {
-        float torque = 85.0f;
+        float torque = 140.0f;
         throttled = true;
 
         //apply transmission torque to back wheels
@@ -61,7 +65,7 @@ public class Vehicle extends RigidBody
 
     public void setBrakes(float brakes)
     {
-        float brakeTorque = 15.0f;
+        float brakeTorque = 20.0f;
 
         //apply brake torque opposing wheel vel
         for (Wheel wheel : wheels)
@@ -81,11 +85,11 @@ public class Vehicle extends RigidBody
         	if(!throttled)
         	wheel.addTransmissionTorque(-wheelVel * 0.13f);
             
-            worldWheelOffset.equals(relativeToWorld(wheel.getAnchorPoint()));
-            worldGroundVel.equals(pointVelocity(worldWheelOffset));
-            relativeGroundSpeed.equals(worldToRelative(worldGroundVel));
-            relativeResponseForce.equals(wheel.calculateForce(relativeGroundSpeed, timeStep));
-            worldResponseForce.equals(relativeToWorld(relativeResponseForce));
+            worldWheelOffset.set(relativeToWorld(wheel.getAnchorPoint()));
+            worldGroundVel.set(pointVelocity(worldWheelOffset));
+            relativeGroundSpeed.set(worldToRelative(worldGroundVel));
+            relativeResponseForce.set(wheel.calculateForce(relativeGroundSpeed, timeStep));
+            worldResponseForce.set(relativeToWorld(relativeResponseForce));
 
             applyForce(worldResponseForce, worldWheelOffset);
         }

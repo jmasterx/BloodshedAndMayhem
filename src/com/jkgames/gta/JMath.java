@@ -18,14 +18,12 @@ public class JMath
 	{
 		x -= startX;
 		return (int)(x / width);
-		
 	}
 	
 	static public int rowFromPos(float startY,float height, float y)
 	{
 		y -= startY;
-		return (int)(y / height);
-		
+		return (int)(y / height);	
 	}
 	
 	static public float valueAt( float valueA, float valueB, float t )

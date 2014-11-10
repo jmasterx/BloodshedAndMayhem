@@ -31,6 +31,7 @@ public class AnalogStick extends Entity
 		float cy = getCenterY();
 		float r = getRadius();
 		float angle = (float)Math.atan2(y - cy, x - cx);
+		setAngle(angle - (float)((Math.PI / 2)));
 		stickVector.x = (float)Math.cos(angle);
 		stickVector.y = (float)Math.sin(angle);
 		stickDistance = JMath.distance(x,y,cx,cy);
@@ -64,7 +65,7 @@ public class AnalogStick extends Entity
 	public void draw(GraphicsContext c)
 	{
 		c.drawRotatedScaledBitmap(mainStickImg,
-				getCenterX(), getCenterY(), getWidth(), getHeight(), getAngle());
+				getCenterX(), getCenterY(), getWidth(), getHeight(), 0.0f);
 		c.getCanvas().drawBitmap(innerStickImg, null, getInnerStickRect(), null);
 	}
 

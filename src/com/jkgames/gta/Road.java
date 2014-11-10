@@ -24,6 +24,7 @@ public class Road extends Entity
 		setSolid(false);
 		generateSubRoads();
 		setLayer(LAYER_ROAD);
+		setType(TYPE_GROUND);
 	}
 	
 	private void generateSubRoads()

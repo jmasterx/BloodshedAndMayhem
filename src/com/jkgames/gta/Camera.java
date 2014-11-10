@@ -92,4 +92,9 @@ public class Camera
 		
 		return camRect;
 	}
+	
+	public OBB2D getCamRect()
+	{
+		return camRect;
+	}
 }

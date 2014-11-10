@@ -9,84 +9,114 @@ package com.jkgames.gta;
 
 public final class R {
     public static final class array {
-        public static final int difficulties=0x7f040000;
+        public static final int difficulties=0x7f050000;
     }
     public static final class attr {
     }
     public static final class color {
-        public static final int circle_dark=0x7f050005;
-        public static final int circle_lite=0x7f050006;
-        public static final int level_color=0x7f050008;
-        public static final int main_application_background=0x7f050001;
-        public static final int main_game_background=0x7f050002;
-        public static final int main_game_foreground=0x7f050003;
-        public static final int main_label_color=0x7f050000;
-        public static final int puzzle_line=0x7f050004;
-        public static final int score_color=0x7f050007;
+        public static final int circle_dark=0x7f060005;
+        public static final int circle_lite=0x7f060006;
+        public static final int level_color=0x7f060008;
+        public static final int main_application_background=0x7f060001;
+        public static final int main_game_background=0x7f060002;
+        public static final int main_game_foreground=0x7f060003;
+        public static final int main_label_color=0x7f060000;
+        public static final int puzzle_line=0x7f060004;
+        public static final int score_color=0x7f060007;
     }
     public static final class drawable {
         public static final int analog_stick=0x7f020000;
-        public static final int brake=0x7f020001;
-        public static final int building=0x7f020002;
-        public static final int bus=0x7f020003;
-        public static final int door=0x7f020004;
-        public static final int fist=0x7f020005;
-        public static final int gas=0x7f020006;
-        public static final int gta1=0x7f020007;
-        public static final int ic_action_search=0x7f020008;
-        public static final int ic_launcher=0x7f020009;
-        public static final int light=0x7f02000a;
-        public static final int main_road=0x7f02000b;
-        public static final int police=0x7f02000c;
-        public static final int road_intersection=0x7f02000d;
-        public static final int road_intersection_three_way=0x7f02000e;
-        public static final int road_intersection_two_way=0x7f02000f;
-        public static final int run=0x7f020010;
-        public static final int shoot=0x7f020011;
-        public static final int side_walk=0x7f020012;
-        public static final int sportscar=0x7f020013;
-        public static final int sub_analog_stick=0x7f020014;
-        public static final int taxi=0x7f020015;
-        public static final int temp_button=0x7f020016;
+        public static final int blood=0x7f020001;
+        public static final int brake=0x7f020002;
+        public static final int building=0x7f020003;
+        public static final int car_ambulance=0x7f020004;
+        public static final int car_bat=0x7f020005;
+        public static final int car_beamer=0x7f020006;
+        public static final int car_beatle=0x7f020007;
+        public static final int car_bus=0x7f020008;
+        public static final int car_classic=0x7f020009;
+        public static final int car_cop=0x7f02000a;
+        public static final int car_fire_truck=0x7f02000b;
+        public static final int car_home=0x7f02000c;
+        public static final int car_hot_dog=0x7f02000d;
+        public static final int car_mini=0x7f02000e;
+        public static final int car_mustang=0x7f02000f;
+        public static final int car_roadster=0x7f020010;
+        public static final int car_speedster=0x7f020011;
+        public static final int car_sport=0x7f020012;
+        public static final int car_tank=0x7f020013;
+        public static final int car_tanker=0x7f020014;
+        public static final int car_taxi=0x7f020015;
+        public static final int car_truckbed=0x7f020016;
+        public static final int car_viper=0x7f020017;
+        public static final int door=0x7f020018;
+        public static final int fist=0x7f020019;
+        public static final int gas=0x7f02001a;
+        public static final int gta1=0x7f02001b;
+        public static final int holy_sheet=0x7f02001c;
+        public static final int ic_action_search=0x7f02001d;
+        public static final int ic_launcher=0x7f02001e;
+        public static final int lady_sheet=0x7f02001f;
+        public static final int light=0x7f020020;
+        public static final int main_road=0x7f020021;
+        public static final int man_sheet=0x7f020022;
+        public static final int road_intersection=0x7f020023;
+        public static final int road_intersection_three_way=0x7f020024;
+        public static final int road_intersection_two_way=0x7f020025;
+        public static final int run=0x7f020026;
+        public static final int shoot=0x7f020027;
+        public static final int side_walk=0x7f020028;
+        public static final int sub_analog_stick=0x7f020029;
+        public static final int temp_button=0x7f02002a;
     }
     public static final class id {
-        public static final int background_button=0x7f090005;
-        public static final int exit_button=0x7f090006;
-        public static final int game_difficulty_button=0x7f090004;
-        public static final int instructions_content=0x7f090000;
-        public static final int menu_settings=0x7f090003;
-        public static final int new_game_button=0x7f090001;
-        public static final int settings_button=0x7f090002;
+        public static final int exit_button=0x7f0a0003;
+        public static final int instructions_content=0x7f0a0000;
+        public static final int menu_settings=0x7f0a0002;
+        public static final int new_game_button=0x7f0a0001;
     }
     public static final class layout {
         public static final int instructions=0x7f030000;
         public static final int main=0x7f030001;
     }
     public static final class menu {
-        public static final int main=0x7f080000;
-        public static final int menu=0x7f080001;
+        public static final int main=0x7f090000;
+        public static final int menu=0x7f090001;
+    }
+    public static final class raw {
+        public static final int ambiance=0x7f040000;
+        public static final int car_crash_wall=0x7f040001;
+        public static final int car_move_loop=0x7f040002;
+        public static final int car_moving=0x7f040003;
+        public static final int car_scrape=0x7f040004;
+        public static final int car_skid=0x7f040005;
+        public static final int car_start=0x7f040006;
+        public static final int engine_idle=0x7f040007;
+        public static final int radio=0x7f040008;
+        public static final int run_over=0x7f040009;
+        public static final int walk=0x7f04000a;
     }
     public static final class string {
-        public static final int app_name=0x7f060000;
-        public static final int background_label=0x7f06000f;
-        public static final int difficulty_label=0x7f06000c;
-        public static final int exit_label=0x7f060010;
-        public static final int game_difficulty_label=0x7f06000b;
-        public static final int hardcore_label=0x7f06000e;
-        public static final int instructions_label=0x7f060007;
-        public static final int instructions_text=0x7f06000a;
-        public static final int instructions_title=0x7f060009;
-        public static final int level_label=0x7f060011;
-        public static final int main_title=0x7f060002;
-        public static final int menu_settings=0x7f060008;
-        public static final int new_game_label=0x7f060004;
-        public static final int normal_label=0x7f06000d;
-        public static final int resume_label=0x7f060003;
-        public static final int scores_label=0x7f060006;
-        public static final int settings_label=0x7f060005;
-        public static final int title_activity_gta=0x7f060001;
+        public static final int app_name=0x7f070000;
+        public static final int background_label=0x7f07000f;
+        public static final int difficulty_label=0x7f07000c;
+        public static final int exit_label=0x7f070010;
+        public static final int game_difficulty_label=0x7f07000b;
+        public static final int hardcore_label=0x7f07000e;
+        public static final int instructions_label=0x7f070007;
+        public static final int instructions_text=0x7f07000a;
+        public static final int instructions_title=0x7f070009;
+        public static final int level_label=0x7f070011;
+        public static final int main_title=0x7f070002;
+        public static final int menu_settings=0x7f070008;
+        public static final int new_game_label=0x7f070004;
+        public static final int normal_label=0x7f07000d;
+        public static final int resume_label=0x7f070003;
+        public static final int scores_label=0x7f070006;
+        public static final int settings_label=0x7f070005;
+        public static final int title_activity_gta=0x7f070001;
     }
     public static final class style {
-        public static final int AppTheme=0x7f070000;
+        public static final int AppTheme=0x7f080000;
     }
 }

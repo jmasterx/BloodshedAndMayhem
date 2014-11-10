@@ -12,13 +12,24 @@ public class Entity implements IDrawable
 	private boolean solid = true;
 	private int layer = LAYER_ROAD;
 	private int regionCount;
+	private ArrayList<Entity> lastColliders = new ArrayList<Entity>();
+	private int type;
 	
 	public static final int LAYER_ROAD = 0;
 	public static final int LAYER_INTERSECTION = 1;
-	public static final int LAYER_PEDESTRIAN = 2;
-	public static final int LAYER_OBJECTS = 3;
+	public static final int LAYER_DEAD_PEDESTRIAN = 2;
+	public static final int LAYER_PEDESTRIAN = 3;
+	public static final int LAYER_OBJECTS = 4;
 	
-	public static final int MAX_LAYERS = 4;
+	public static final int TYPE_ENTITY = 0;
+	public static final int TYPE_PLAYER = 1;
+	public static final int TYPE_DECORE= 2;
+	public static final int TYPE_PED = 3;
+	public static final int TYPE_RIGID_BODY = 4;
+	public static final int TYPE_VEHICLE = 5;
+	public static final int TYPE_GROUND= 6;
+	
+	public static final int MAX_LAYERS = 5;
 
 	public Entity()
 	{
@@ -139,6 +150,11 @@ public class Entity implements IDrawable
 	public void setSolid(boolean solid)
 	{
 		this.solid = solid;
+		
+		if(world != null)
+		{
+			world.updateSolid(this);
+		}
 	}
 
 	public int getLayer() 
@@ -154,6 +170,32 @@ public class Entity implements IDrawable
 	public void setRegionCount(int regionCount) 
 	{
 		this.regionCount = regionCount;
+	}
+
+	public ArrayList<Entity> getLastColliders() 
+	{
+		return lastColliders;
+	}
+
+
+	public int getType() 
+	{
+		return type;
+	}
+
+	public void setType(int type) 
+	{
+		this.type = type;
+	}
+	
+	public boolean isRigidBody()
+	{
+		return false;
+	}
+	
+	public Vector2D getCenter()
+	{
+		return getRect().getCenter();
 	}
 	
 

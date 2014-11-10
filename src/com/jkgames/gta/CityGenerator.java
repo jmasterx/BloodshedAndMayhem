@@ -444,7 +444,8 @@ public class CityGenerator
 		return null;
 	}
 	
-	private Intersection createIntersection(RectF position, GraphNode node, Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
+	private Intersection createIntersection(RectF position, 
+			GraphNode node, Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
 	{
 		Bitmap bmp = null;
 		int direction = 0; //0 = top, 1 = right, 2 = bottom, 3 = left
@@ -503,7 +504,8 @@ public class CityGenerator
 		return intersection;
 	}
 	private void generateRoadsAndIntersections(ArrayList<Intersection> intersections,
-			ArrayList<Road> roads, Bitmap roadImg, Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
+			ArrayList<Road> roads, Bitmap roadImg,
+			Bitmap fourWay, Bitmap threeWay, Bitmap twoWay)
 	{
 		//memory allocations are expensive
 		intersections.ensureCapacity(getNumXNodes() * getNumYNodes());
@@ -530,7 +532,8 @@ public class CityGenerator
 					tempRect.right = g.x + (intersectionWidth / 2.0f);
 					tempRect.bottom = g.y + (intersectionWidth / 2.0f);
 					
-					intersectionMatrix[i][j] = createIntersection(tempRect, g, fourWay, threeWay, twoWay);
+					intersectionMatrix[i][j] = 
+							createIntersection(tempRect, g, fourWay, threeWay, twoWay);
 				}
 			
 			}
@@ -600,7 +603,8 @@ public class CityGenerator
 		Bitmap twoWay = BitmapFactory.decodeResource(res, R.drawable.road_intersection_two_way);
 		ArrayList<Intersection> intersections = new ArrayList<Intersection>();
 		ArrayList<Road> roads = new ArrayList<Road>();
-		generateRoadsAndIntersections(intersections, roads, roadImg, fourWay,threeWay,twoWay);
+		generateRoadsAndIntersections(intersections, roads, roadImg, 
+				fourWay,threeWay,twoWay);
 		BuildingGenerator gen = new BuildingGenerator(res, roads);
 		return new City(roads,intersections,gen.generateBuildings());
 	}

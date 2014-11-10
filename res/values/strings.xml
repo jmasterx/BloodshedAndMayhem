@@ -1,10 +1,10 @@
 <resources>
 
     <string name="app_name">Gta</string>
-    <string name="title_activity_gta">Gta</string>
-    <string name="main_title">Gta</string>
+    <string name="title_activity_gta">Bloodshed &amp; Mayhem</string>
+    <string name="main_title">Bloodshed &amp; Mayhem</string>
     <string name="resume_label">Resume</string>
-    <string name="new_game_label">New Game</string>
+    <string name="new_game_label">Start The Bloodshed</string>
     <string name="settings_label">Settings</string>
     <string name="scores_label">Scores</string>
     <string name="instructions_label">Instructions</string>

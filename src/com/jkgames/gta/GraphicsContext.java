@@ -5,7 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Rect;
 import android.opengl.GLES11;
 
 
@@ -17,7 +17,9 @@ public class GraphicsContext
 	private Paint paint = new Paint();
 	private Camera camera;
 	private OBB2D viewRect;
-	private  boolean hasIdentity = false;
+	private boolean hasIdentity = false;
+	private Rect dstRect = new Rect();
+	private Rect srcRect = new Rect();
 
 	public GraphicsContext()
 	{
@@ -57,7 +59,8 @@ public class GraphicsContext
 	}
 	
 	public void drawRotatedScaledBitmap(Bitmap b, 
-			float centerX, float centerY, float width, float height, float angle)
+			float centerX, float centerY,
+			float width, float height, float angle)
 	{
 		float scaleX = width / b.getWidth();
 		float scaleY = height / b.getHeight();
@@ -72,6 +75,29 @@ public class GraphicsContext
 		canvas.drawBitmap(b, matrix, null);
 	}
 	
+	public void drawRotatedScaledBitmap(Bitmap b, 
+			float centerX, float centerY, float width, float height,
+			float sourceX, float sourceY, 
+			float sourceWidth, float sourceHeight, float angle)
+	{
+		float cx = centerX;
+		float cy = centerY;
+
+		dstRect.left = (int)centerX - (int)(width / 2);
+		dstRect.top = (int)centerY - (int)(height / 2);
+		dstRect.right = dstRect.left +  (int)width;
+		dstRect.bottom = dstRect.top +  (int)height;
+		
+		srcRect.left = (int)sourceX;
+		srcRect.top = (int)sourceY;
+		srcRect.right = srcRect.left +  (int)sourceWidth;
+		srcRect.bottom = srcRect.top +  (int)sourceHeight;
+	
+		canvas.rotate(angle * (180.0f / (float)(Math.PI)),cx,cy);
+		canvas.drawBitmap(b, srcRect, dstRect, null);
+		canvas.rotate(-angle * (180.0f / (float)(Math.PI)),cx,cy);
+	}
+	
 	public void drawRotatedBitmap(Bitmap b, 
 			float centerX, float centerY, float angle)
 	{
@@ -82,13 +108,15 @@ public class GraphicsContext
 	public void drawBitmap(Bitmap b, 
 			float centerX, float centerY)
 	{
-		canvas.drawBitmap(b, centerX - (b.getWidth() / 2), centerY - (b.getHeight() / 2), null);
+		canvas.drawBitmap(b, centerX - 
+				(b.getWidth() / 2), centerY - (b.getHeight() / 2), null);
 	}
 	
 	public void drawBitmap(Bitmap b, 
 			float centerX, float centerY, Paint p)
 	{
-		canvas.drawBitmap(b, centerX - (b.getWidth() / 2), centerY - (b.getHeight() / 2), p);
+		canvas.drawBitmap(b, centerX -
+				(b.getWidth() / 2), centerY - (b.getHeight() / 2), p);
 	}
 	
 	

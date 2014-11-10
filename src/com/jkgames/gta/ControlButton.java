@@ -25,7 +25,8 @@ public class ControlButton extends Entity
 	public void draw(GraphicsContext c)
 	{
 		if(!isPressed())
-		c.drawRotatedScaledBitmap(controlImg, getCenterX(), getCenterY(), getWidth(), getHeight(), getAngle());
+		c.drawRotatedScaledBitmap(controlImg, getCenterX(), 
+				getCenterY(), getWidth(), getHeight(), getAngle());
 	}
 
 	public boolean isPressed() 

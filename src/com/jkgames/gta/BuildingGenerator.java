@@ -11,6 +11,7 @@ public class BuildingGenerator
 	private Resources res;
 	private ArrayList<Road> roads;
 	
+	public static final int SPACE_X = 70;
 	
 	BuildingGenerator(Resources res, ArrayList<Road> roads)
 	{
@@ -23,31 +24,37 @@ public class BuildingGenerator
 		Bitmap buildingImg = BitmapFactory.decodeResource(res, R.drawable.building);
 		ArrayList<Building> buildings = new ArrayList<Building>();
 		
+		float newBuildH = 0.0f;
 		for(Road road : roads)
 		{
 			final float scalar = 1.0f;
-			final float marginW = road.getHeight() / 4;
-			final float marginH = road.getWidth() / 4;
+			final float marginW = road.getHeight() / 2;
+			final float marginH = road.getWidth() / 3;
 			final float buildW = buildingImg.getWidth() * scalar;
 			final float buildH = buildingImg.getWidth() * scalar;
 	
 			for(int i = 0; i < 2; ++i)
 			{
 				if(!road.isTopBottom())
-				{
+				{	
 					float posX = road.getRect().left() + marginW;
 					float posY = road.getRect().top();
 					float maxX = road.getRect().right() - marginW - posX;
-					float spaceX = 70;
-					float totalBuildingW = spaceX + buildW;
+			
+					float totalBuildingW = SPACE_X + buildW;
 					int numBuildings = (int)Math.floor(maxX / totalBuildingW);
 					//margin - 1
 					
-					float spaceSize = spaceX * (numBuildings - 1);
+					float spaceSize = SPACE_X * (numBuildings);
 					float remainder = maxX - spaceSize;
 					float newBuildingW = remainder / numBuildings;
 					float newScalar = newBuildingW / buildW;
 					float newBuildingH = buildingImg.getHeight() * newScalar;
+					if(newBuildingH > newBuildH)
+					{
+							newBuildH = newBuildingH;
+					}
+				
 					
 					
 					
@@ -63,21 +70,21 @@ public class BuildingGenerator
 									posX + (newBuildingW / 2),
 									posY + road.getHeight() + marginW + (newBuildingH / 2)));
 							
-							posX += newBuildingW + spaceX;
+							posX += newBuildingW + SPACE_X;
 					}
 					
 				}
 				else
 				{
 					float posX = road.getRect().left();
-					float posY = road.getRect().top()  + marginH + buildH;
-					float maxX = road.getRect().bottom() - marginH - buildH - posY;
-					float spaceX = 70;
-					float totalBuildingW = spaceX + buildW;
+					float posY = road.getRect().top()  + marginH + newBuildH;
+					float maxX = road.getRect().bottom() - marginH - newBuildH - posY;
+		
+					float totalBuildingW = SPACE_X + buildW;
 					int numBuildings = (int)Math.ceil(maxX / totalBuildingW);
 					//margin - 1
 					
-					float spaceSize = spaceX * (numBuildings - 1);
+					float spaceSize = SPACE_X * (numBuildings);
 					float remainder = maxX - spaceSize;
 					float newBuildingW = remainder / numBuildings;
 					float newScalar = newBuildingW / buildW;
@@ -97,27 +104,10 @@ public class BuildingGenerator
 									posX + (newBuildingH / 2) + marginH + road.getWidth(),
 									posY + (newBuildingW / 2)));
 							
-							posY += newBuildingW + spaceX;
+							posY += newBuildingW + SPACE_X;
 					}
 				}
 			}
-		
-			
-			/*
-			if(road.isTopBottom())
-			{
-				float posX = road.getRect().left;
-				float posY = road.getRect().top + marginH;
-				
-				while(posY < road.getRect().bottom)
-				{
-						buildings.add(new Building(buildingImg, Building.DIRECTION_LEFT, scalar,
-						posX - marginH, 
-						posY));
-						
-						posY += buildW + JMath.randomRange(20,60);
-				}
-			}*/
 		}
 		
 		

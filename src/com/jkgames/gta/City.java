@@ -5,14 +5,17 @@ import java.util.ArrayList;
 import android.graphics.RectF;
 
 
-public class City implements IDrawable
+public class City
 {
 	private ArrayList<Road> roads = new ArrayList<Road>();
-	private ArrayList<Intersection> intersections = new ArrayList<Intersection>();
+	private ArrayList<Intersection> intersections = 
+			new ArrayList<Intersection>();
 	private ArrayList<Building> buildings = new ArrayList<Building>();
 
 	
-	public City(ArrayList<Road> roads, ArrayList<Intersection> intersections, ArrayList<Building> buildings)
+	public City(ArrayList<Road> roads,
+			ArrayList<Intersection> intersections,
+			ArrayList<Building> buildings)
 	{
 		this.roads = roads;
 		this.intersections = intersections;
@@ -29,38 +32,7 @@ public class City implements IDrawable
 	{
 		return intersections;
 	}
-	
-	public void draw(GraphicsContext c)
-	{
-		
-		OBB2D screen = c.getViewRect();
-		for(Road r : roads)
-		{
-			if(screen.overlaps(r.getRect()))
-			{
-				r.draw(c);
-			}
-		}
-		
-		for(Intersection i : intersections)
-		{
-			if(screen.overlaps(i.getRect()))
-			{
-				i.draw(c);
-			}
-		}
-		
-		/*
-		for(Building b : buildings)
-		{
-			if(screen.overlaps(b.getRect()))
-			{
-				b.draw(c);
-			}
-		}
-		*/
-	}
-	
+
 	ArrayList<Building> getBuildings()
 	{
 		return buildings;

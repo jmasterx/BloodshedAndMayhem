@@ -40,6 +40,7 @@ class RigidBody extends Entity
       mass = 1.0f;
       inertia = 1.0f;
       setLayer(LAYER_OBJECTS);
+      setType(TYPE_RIGID_BODY);
   }
 
 	protected void rectChanged()
@@ -57,7 +58,8 @@ class RigidBody extends Entity
       this.halfSize = halfSize;
       this.mass = mass;
       image = bitmap;
-      inertia = (1.0f / 20.0f) * (halfSize.x * halfSize.x) * (halfSize.y * halfSize.y) * mass;
+      inertia = (1.0f / 16.0f) * (halfSize.x * halfSize.x) *
+    		  (halfSize.y * halfSize.y) * mass;
 
       RectF rect = new RectF();
       float scalar = 10.0f;
@@ -113,10 +115,8 @@ class RigidBody extends Entity
       setAngle(getAngle() +  angularVelocity * timeStep);  
       torque = 0; //clear torque
      
-   
   }
   
-
   //take a relative Vector2D and make it a world Vector2D
   public Vector2D relativeToWorld(Vector2D relative)
   {
@@ -169,7 +169,16 @@ class RigidBody extends Entity
       torque += Vector2D.cross(worldOffset, worldForce);
   }
  
-  @Override
+  public float getTorque()
+  {
+	return torque;
+}
+
+public void setTorque(float torque) {
+	this.torque = torque;
+}
+
+@Override
   public void draw( GraphicsContext c)
   {
       c.drawRotatedScaledBitmap(image, getPosition().x, getPosition().y,
@@ -194,6 +203,11 @@ class RigidBody extends Entity
 	public void setAngularVelocity(float velocity)
 	{
 		this.angularVelocity = velocity;
+	}
+	
+	public boolean isRigidBody()
+	{
+		return true;
 	}
   
 }
